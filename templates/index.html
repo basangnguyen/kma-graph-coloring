@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACADEMY OF CRYPTOGRAPHY TECHNIQUES - Graph Coloring Solver Website & Learning Hub</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        :root { --bg: #eceff1; --card: #ffffff; --text: #2c3e50; --primary: #0054a5; --accent: #e74c3c; --kma-red: #cc0000; }
+        [data-theme="dark"] { --bg: #121212; --card: #1e1e1e; --text: #e0e0e0; --primary: #3498db; --kma-red: #ff4d4d; }
+        
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: 0.3s; padding-bottom: 80px; }
+
+        header {
+            background: #ffffff; padding: 15px 25px; display: flex; align-items: center;
+            justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            margin-bottom: 25px; border-bottom: 4px solid var(--kma-red);
+        }
+        [data-theme="dark"] header { background: #1e1e1e; }
+        
+        .logo-container {
+            width: 80px; height: 80px; margin-right: 20px; display: flex; 
+            align-items: center; justify-content: center; overflow: hidden; 
+            background: #f0f0f0; border-radius: 8px;
+        }
+        .logo-kma { max-height: 100%; max-width: 100%; object-fit: contain; }
+        .header-title h1 { margin: 0; font-size: 1.5em; color: var(--kma-red); text-transform: uppercase; font-weight: bold; }
+        .header-title p { margin: 2px 0 0 0; font-size: 0.95em; font-weight: 500; }
+        .header-title .slogan { margin: 2px 0 0 0; font-size: 0.85em; font-weight: 600; color: #555; font-style: italic; }
+        [data-theme="dark"] .header-title .slogan { color: #aaa; }
+
+        /* Đã cập nhật controls-top để chứa nút Đăng xuất */
+        .controls-top { position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 15px; z-index: 1000; }
+        .user-info { font-size: 0.9em; font-weight: bold; color: var(--text); background: var(--card); padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; }
+        
+        .logout-btn {
+            padding: 5px 12px; border-radius: 5px; border: 1px solid var(--kma-red);
+            background: var(--card); color: var(--kma-red); font-weight: bold;
+            cursor: pointer; text-decoration: none; transition: 0.3s; display: flex; align-items: center; gap: 5px;
+        }
+        .logout-btn:hover { background: var(--kma-red); color: white; }
+
+        .lang-select { padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer; background: var(--card); color: var(--text); font-weight: bold; }
+        .theme-toggle { cursor: pointer; font-size: 20px; background: var(--card); padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; }
+
+        .tab-container { max-width: 1200px; margin: 0 auto 20px auto; display: flex; gap: 10px; padding: 0 20px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; background: #cfd8dc; font-weight: bold; color: #455a64; transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .content-section { display: none; max-width: 1200px; margin: auto; padding: 0 20px 30px 20px; box-sizing: border-box; }
+        .content-section.active { display: grid; grid-template-columns: 340px 1fr; gap: 25px; }
+        .content-section.full-width.active { display: block; }
+
+        .panel { position: relative; background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { font-size: 1.1em; border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 15px; color: var(--primary); }
+        
+        input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; background: var(--card); color: var(--text); box-sizing: border-box; }
+        button.main-btn { width: 100%; background: var(--primary); color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        #mynetwork { height: 450px; background: var(--card); border-radius: 8px; border: 1px dashed #ccc; }
+        .matrix-container { overflow: auto; margin-top: 10px; background: var(--card); padding: 20px; min-height: 200px; position: relative; }
+        
+        .fullscreen-btn {
+            position: absolute; top: 15px; right: 15px; 
+            background: rgba(0,0,0,0.1); border: none; border-radius: 4px; 
+            padding: 5px 10px; cursor: pointer; font-size: 14px; z-index: 10;
+            transition: 0.3s;
+        }
+        .fullscreen-btn:hover { background: var(--primary); color: white; }
+
+        table { border-collapse: collapse; margin: auto; }
+        td { border: 1px solid #ccc; width: 38px; height: 38px; text-align: center; font-weight: bold; }
+
+        /* MUSIC PLAYER STYLES */
+        #music-player {
+            position: fixed; bottom: 20px; left: 20px; z-index: 9999;
+            background: var(--card); padding: 8px 15px; border-radius: 50px;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 2px solid var(--primary);
+        }
+        .music-btn {
+            background: var(--primary); border: none; color: white;
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+
+        /* CONTACT BUTTONS STYLES */
+        .contact-buttons {
+            position: fixed; bottom: 20px; right: 20px; display: flex;
+            flex-direction: column; gap: 12px; z-index: 10000;
+        }
+        .contact-item {
+            width: 45px; height: 45px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: 0.3s; cursor: pointer; text-decoration: none;
+        }
+        .contact-item:hover { transform: scale(1.15); }
+        .fb-btn { background: #1877F2; }
+        .zalo-btn { background: #0084FF; overflow: hidden; }
+        .phone-btn { background: #4CAF50; color: white; font-size: 20px; }
+        .contact-item img { width: 25px; height: 25px; object-fit: contain; }
+
+        /* YOUTUBE & EXAM GRID STYLES */
+        .video-grid, .exam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 20px; padding-bottom: 20px; }
+        .video-item, .exam-item { background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .video-item:hover, .exam-item:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: var(--primary); }
+        
+        .video-thumbnail, .exam-icon-box { width: 100%; aspect-ratio: 16/9; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; }
+        .exam-icon-box { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); font-size: 3rem; }
+        [data-theme="dark"] .exam-icon-box { background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); }
+
+        .play-icon { font-size: 40px; color: white; opacity: 0; transition: 0.3s; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .video-item:hover .play-icon { opacity: 1; }
+        .video-info, .exam-info { padding: 12px; font-size: 0.9em; font-weight: 600; line-height: 1.4; color: var(--text); text-align: center; }
+
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        #yt-container, #pdf-viewer-container { display: none; margin-bottom: 30px; }
+        .search-bar-yt { display: flex; gap: 10px; margin: 20px 0; background: var(--bg); padding: 15px; border-radius: 10px; }
+
+        /* SLIDE STYLES */
+        iframe.doc-frame { width: 100%; height: 750px; border: 1px solid #ccc; border-radius: 8px; }
+        .placeholder { height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #ccc; border-radius: 12px; color: #888; text-align: center; background: rgba(0,0,0,0.02); }
+
+        @media (max-width: 768px) { .content-section.active { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div id="music-player">
+    <button class="music-btn" onclick="toggleMusic()" id="btn-music-toggle">▶</button>
+    <span id="music-text" style="font-size: 13px; font-weight: bold;">Nhạc nền</span>
+    <audio id="bg-audio" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+</div>
+
+<div class="contact-buttons">
+    <a href="https://www.facebook.com/basangg2903" target="_blank" class="contact-item fb-btn" title="Facebook">
+        <img src="fb.png" alt="Facebook">
+    </a>
+    <a href="https://zalo.me/0355938032" target="_blank" class="contact-item zalo-btn" title="Kết nối Zalo với mình">
+        <img src="zalo.png">
+    </a>
+    <a href="tel:0123456789" class="contact-item phone-btn" title="Gọi điện">📞</a>
+</div>
+
+<!-- ĐÃ GHÉP NÚT ĐĂNG XUẤT VÀO ĐÂY -->
+<div class="controls-top">
+    <div class="user-info">👤 {{ user }}</div>
+    
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+        🚪 <span data-i18n="btn-logout">Đăng xuất</span>
+    </a>
+
+    <select class="lang-select" onchange="changeLanguage(this.value)">
+        <option value="vi">🇻🇳 VI</option>
+        <option value="en">🇺🇸 EN</option>
+    </select>
+    <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
+</div>
+
+<header>
+    <div class="logo-container">
+        <img src="https://gist.githubusercontent.com/vinhjaxt/fa4208fd6902dd8b2f4d944fa6e7f2af/raw/logo-hvktmm.png" alt="Logo KMA" class="logo-kma">
+    </div>
+    <div class="header-title">
+        <h1 data-i18n="app-title">Học viện Kỹ thuật Mật mã</h1>
+        <p data-i18n="app-subtitle">Ứng dụng giải toán Tìm sắc số của đồ thị</p>
+        <p class="slogan" data-i18n="app-slogan">Giải mã tri thức - Bảo mật tương lai</p>
+    </div>
+</header>
+
+<div class="tab-container">
+    <button class="tab-btn active" onclick="showTab('calc-tab', this)" data-i18n="tab-calc">🚀 Tính toán</button>
+    <button class="tab-btn" onclick="showTab('theory-tab', this)" data-i18n="tab-theory">📖 Lý thuyết</button>
+    <button class="tab-btn" onclick="showTab('slide-tab', this)" data-i18n="tab-slide">📂 Slide giáo trình</button>
+    <button class="tab-btn" onclick="showTab('exam-tab', this)" data-i18n="tab-exam">📝 Đề thi</button>
+    <button class="tab-btn" onclick="showTab('youtube-tab', this)" data-i18n="tab-youtube">📺 YouTube</button>
+    <button class="tab-btn" onclick="showTab('game-tab', this)" style="background: #ffcc00; color: #333;">🎮 Game</button>
+</div>
+
+<div id="calc-tab" class="content-section active">
+    <div class="left-col">
+        <div class="panel">
+            <h2 data-i18n="input-header">⚙️ Nhập liệu</h2>
+            <label data-i18n="label-vertices">Số đỉnh:</label>
+            <input type="number" id="vertices" value="5">
+            <label data-i18n="label-edges">Cạnh (u-v):</label>
+            <textarea id="edges" rows="5">0-1&#10;1-2&#10;2-3&#10;3-0&#10;0-2</textarea>
+            <button class="main-btn" onclick="main()" data-i18n="btn-run">Chạy thuật toán</button>
+        </div>
+        <div class="panel">
+            <h2 data-i18n="result-header">📊 Kết quả</h2>
+            <div id="stats" data-i18n="no-data">Chưa có dữ liệu</div>
+        </div>
+    </div>
+    <div class="right-col">
+        <div class="panel">
+            <h2 data-i18n="graph-header">🖼️ Đồ thị trực quan</h2>
+            <button class="fullscreen-btn" onclick="toggleFullscreen('mynetwork')">⛶</button>
+            <div id="mynetwork"></div>
+        </div>
+        <div id="matrix-display" class="panel matrix-container">
+            <h2 data-i18n="matrix-header">🔢 Ma trận kề</h2>
+            <button class="fullscreen-btn" onclick="toggleFullscreen('matrix-display')">⛶</button>
+            <div id="matrix-table-wrapper"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Các tab khác giữ nguyên nội dung -->
+<div id="theory-tab" class="content-section panel full-width">
+    <h2 data-i18n="theory-title">Lý thuyết Tô màu đồ thị</h2>
+    <p>Bài toán tô màu đồ thị là việc gán màu cho các đỉnh sao cho không có hai đỉnh kề nhau nào cùng màu.</p>
+</div>
+
+<div id="slide-tab" class="content-section panel full-width">
+    <h2 data-i18n="slide-header">📂 Slide giáo trình & Tài liệu</h2>
+    <input type="text" id="slide-search" placeholder="🔍 Tìm kiếm tài liệu..." onkeyup="filterSlides()" style="margin-bottom:15px; border:2px solid var(--primary);">
+    <div class="slide-controls" id="slide-list">
+        <button class="slide-btn" onclick="loadPdf('static/docs/chuong2.pdf', 'slide-frame', 'slide-placeholder')">Chương 2</button>
+        <button class="slide-btn" onclick="loadPdf('static/docs/chuong3.pdf', 'slide-frame', 'slide-placeholder')">Chương 3</button>
+        <button class="slide-btn" onclick="loadPdf('static/docs/chuong4.pdf', 'slide-frame', 'slide-placeholder')">Chương 4</button>
+        <button class="slide-btn" onclick="loadPdf('static/docs/chuong41.pdf', 'slide-frame', 'slide-placeholder')">Chương 4.1</button>
+        <button class="slide-btn" onclick="loadPdf('static/docs/chuong43.pdf', 'slide-frame', 'slide-placeholder')">Chương 4.3</button>
+    </div>
+    <div id="slide-placeholder" class="placeholder"><p style="font-size: 3rem;">📄</p>Chọn tài liệu để xem</div>
+    <iframe id="slide-frame" class="doc-frame" style="display:none"></iframe>
+</div>
+
+<div id="exam-tab" class="content-section panel full-width">
+    <h2 data-i18n="exam-header">📝 Đề thi mẫu & Tài liệu ôn tập</h2>
+    <div id="pdf-viewer-container">
+        <button class="slide-btn" onclick="closePdfViewer()" style="margin-bottom: 10px; border-color: var(--kma-red); color: var(--kma-red);">✖ Đóng trình xem</button>
+        <iframe id="exam-frame" class="doc-frame"></iframe>
+    </div>
+    <div id="exam-grid-container">
+        <div class="exam-grid">
+            <div class="exam-item" onclick="loadPdf('static/docs/demau.pdf', 'exam-frame', 'exam-placeholder', true)">
+                <div class="exam-icon-box">📄</div>
+                <div class="exam-info">Đề thi mẫu khảo thí</div>
+            </div>
+            <div class="exam-item" onclick="loadPdf('static/docs/Roi_rac1.pdf', 'exam-frame', 'exam-placeholder', true)">
+                <div class="exam-icon-box">📘</div>
+                <div class="exam-info">Phiếu bài tập</div>
+            </div>
+            <div class="exam-item" onclick="loadPdf('static/docs/matran.pdf', 'exam-frame', 'exam-placeholder', true)">
+                <div class="exam-icon-box">🔢</div>
+                <div class="exam-info">Ma trận đề thi</div>
+            </div>
+        </div>
+    </div>
+    <div id="exam-placeholder" class="placeholder"><p style="font-size: 3rem;">📝</p><p>Chọn một đề thi ở trên để xem chi tiết</p></div>
+</div>
+
+<div id="youtube-tab" class="content-section panel full-width">
+    <h2 data-i18n="youtube-header">📺 Seri Video Bài giảng: Toán rời rạc KMA</h2>
+    <div id="yt-container">
+        <div class="video-wrapper"><iframe id="yt-frame" allowfullscreen></iframe></div>
+    </div>
+    <div id="yt-placeholder" class="placeholder"><p style="font-size: 3rem; margin-bottom: 10px;">🎥</p><p>Chọn một bài giảng bên dưới để bắt đầu học tập</p></div>
+    <div class="search-bar-yt">
+        <input type="text" id="yt-url" placeholder="Dán link YouTube khác để xem nhanh...">
+        <button class="main-btn" style="width: 150px;" onclick="loadYoutubeManual()">Xem Video</button>
+    </div>
+    <div class="video-grid" id="kma-playlist-grid"></div>
+</div>
+
+<div id="game-tab" class="content-section panel full-width">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>🎮 Giải trí</h2>
+        <button class="slide-btn" id="stop-game-btn" onclick="stopGame()" style="border-color: var(--kma-red); color: var(--kma-red); display: none;">Dừng chơi</button>
+    </div>
+    <div id="game-placeholder" class="placeholder"><p style="font-size: 3rem;">🕹️</p><button class="main-btn" style="width:200px" onclick="loadGame()">Bắt đầu Game</button></div>
+    <iframe id="game-frame" style="height: 600px; border: none; width: 100%; display: none;"></iframe>
+</div>
+
+<script>
+    const i18n = {
+        vi: { 
+            "app-title": "Học viện Kỹ thuật Mật mã", "app-subtitle": "Ứng dụng giải toán Tìm sắc số của đồ thị", 
+            "app-slogan": "Giải mã tri thức - Bảo mật tương lai",
+            "tab-calc": "🚀 Tính toán", "tab-theory": "📖 Lý thuyết", "tab-slide": "📂 Slide giáo trình", 
+            "tab-exam": "📝 Đề thi mẫu", "tab-youtube": "📺 YouTube",
+            "input-header": "⚙️ Nhập liệu", "label-vertices": "Số đỉnh:", "label-edges": "Cạnh (u-v):", 
+            "btn-run": "Chạy thuật toán", "result-header": "📊 Kết quả", "no-data": "Chưa có dữ liệu", 
+            "graph-header": "🖼️ Đồ thị trực quan", "matrix-header": "🔢 Ma trận kề", 
+            "res-chromatic": "Sắc số (Chromatic Number): ", "youtube-header": "📺 Video bài giảng KMA",
+            "btn-logout": "Đăng xuất"
+        },
+        en: { 
+            "app-title": "ACADEMY OF CRYPTOGRAPHY TECHNIQUES", "app-subtitle": "Graph Coloring Solver Website", 
+            "app-slogan": "Decoding Knowledge - Securing The Future",
+            "tab-calc": "🚀 Calculation", "tab-theory": "📖 Theory", "tab-slide": "📂 Slides", 
+            "tab-exam": "📝 Exams", "tab-youtube": "📺 YouTube",
+            "input-header": "⚙️ Input", "label-vertices": "Vertices:", "label-edges": "Edges:", 
+            "btn-run": "Run", "result-header": "📊 Results", "no-data": "No data", 
+            "graph-header": "🖼️ Graph", "matrix-header": "🔢 Matrix", 
+            "res-chromatic": "Chromatic Number: ", "youtube-header": "📺 Video Lectures",
+            "btn-logout": "Logout"
+        }
+    };
+
+    let currentLang = 'vi';
+    function changeLanguage(l) { 
+        currentLang = l; 
+        document.querySelectorAll('[data-i18n]').forEach(el => { 
+            el.innerText = i18n[l][el.getAttribute('data-i18n')]; 
+        }); 
+    }
+
+    function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+
+    // Music Player Logic
+    const audio = document.getElementById('bg-audio');
+    const musicBtn = document.getElementById('btn-music-toggle');
+    const musicText = document.getElementById('music-text');
+    function toggleMusic() {
+        if (audio.paused) { audio.play(); musicBtn.innerText = "⏸"; musicText.innerText = "Đang phát..."; } 
+        else { audio.pause(); musicBtn.innerText = "▶"; musicText.innerText = "Đã dừng"; }
+    }
+
+    // Tab & Logic PDF/YT/Game
+    function showTab(t, b) { 
+        stopGame(); stopYoutube(); closePdfViewer();
+        if (t === 'youtube-tab') audio.volume = 0.2; else audio.volume = 1.0;
+        document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none'); 
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
+        const target = document.getElementById(t);
+        target.style.display = (t === 'calc-tab' ? 'grid' : 'block'); 
+        b.classList.add('active'); 
+    }
+
+    function loadPdf(path, frameId, placeholderId, isExam = false) { 
+        document.getElementById(placeholderId).style.display = 'none'; 
+        const f = document.getElementById(frameId); 
+        f.style.display = 'block'; f.src = path; 
+        if (isExam) {
+            document.getElementById('pdf-viewer-container').style.display = 'block';
+            document.getElementById('exam-grid-container').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function closePdfViewer() {
+        document.getElementById('pdf-viewer-container').style.display = 'none';
+        document.getElementById('exam-grid-container').style.display = 'block';
+        document.getElementById('exam-placeholder').style.display = 'flex';
+        document.getElementById('exam-frame').src = "";
+    }
+
+    // YouTube Playlist
+    const kmaPlaylist = [
+        { id: "gXifdrT45M4", title: "Bài giảng 1: Mở đầu" }, { id: "kz44xyBNkQg", title: "Bài giảng 2: Logic" },
+        { id: "nzaBhJJ4EDk", title: "Bài giảng 3: Tập hợp" }, { id: "9pjsABtt3NE", title: "Bài giảng 4: Phép đếm" },
+        { id: "O6-0jyNGXXk", title: "Bài giảng 5: Quan hệ" }, { id: "EF_vK1l1x28", title: "Bài giảng 6: Boole" },
+        { id: "xi8sACNWqe0", title: "Bài giảng 7: Đồ thị" }, { id: "PcTx0HjRDok", title: "Bài giảng 8: Cây" },
+        { id: "ZmT2rS_Ievw", title: "Bài giảng 9: Tô màu" }
+    ];
+
+    function renderVideoGrid() {
+        document.getElementById('kma-playlist-grid').innerHTML = kmaPlaylist.map(vid => `
+            <div class="video-item" onclick="playStaticVideo('${vid.id}')">
+                <div class="video-thumbnail" style="background-image: url('https://img.youtube.com/vi/${vid.id}/mqdefault.jpg')"><div class="play-icon">▶</div></div>
+                <div class="video-info">${vid.title}</div>
+            </div>
+        `).join('');
+    }
+
+    function playStaticVideo(id) {
+        document.getElementById('yt-frame').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+        document.getElementById('yt-container').style.display = 'block';
+        document.getElementById('yt-placeholder').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function stopYoutube() { document.getElementById('yt-frame').src = ""; }
+
+    // Game
+    function loadGame() { document.getElementById('game-placeholder').style.display = 'none'; document.getElementById('stop-game-btn').style.display = 'block'; const frame = document.getElementById('game-frame'); frame.style.display = 'block'; frame.src = 'game.html'; }
+    function stopGame() { const frame = document.getElementById('game-frame'); frame.src = "about:blank"; frame.style.display = 'none'; document.getElementById('game-placeholder').style.display = 'flex'; document.getElementById('stop-game-btn').style.display = 'none'; }
+
+    // Graph Algo
+    function main() {
+        const v = parseInt(document.getElementById('vertices').value);
+        const eT = document.getElementById('edges').value.trim();
+        let adj = Array.from({length:v}, () => Array(v).fill(0));
+        eT.split('\n').forEach(l => {
+            let p = l.split('-');
+            if(p.length===2) {
+                let u=parseInt(p[0]), v2=parseInt(p[1]);
+                if(u<v && v2<v) { adj[u][v2]=1; adj[v2][u]=1; }
+            }
+        });
+        renderMatrix(v, adj);
+        const res = getExactColoring(v, adj);
+        renderGraph(v, eT, res.colors);
+        document.getElementById('stats').innerHTML = `${i18n[currentLang]["res-chromatic"]} <b>${res.count}</b>`;
+    }
+
+    function renderMatrix(v, adj) {
+        let h = '<table>';
+        for(let i=0; i<v; i++) { h += '<tr>'; for(let j=0; j<v; j++) h += `<td>${adj[i][j]}</td>`; h += '</tr>'; }
+        document.getElementById('matrix-table-wrapper').innerHTML = h + '</table>';
+    }
+
+    function getExactColoring(n, adj) {
+        function isSafe(v, c, colors) { for(let i=0; i<n; i++) if(adj[v][i] && c===colors[i]) return false; return true; }
+        function solve(m, colors, v) {
+            if(v===n) return true;
+            for(let c=1; c<=m; c++) { if(isSafe(v, c, colors)) { colors[v]=c; if(solve(m, colors, v+1)) return true; colors[v]=0; } }
+            return false;
+        }
+        for(let m=1; m<=n; m++) {
+            let colors = Array(n).fill(0);
+            if(solve(m, colors, 0)) return {count:m, colors: colors.map(c=>c-1)};
+        }
+    }
+
+    function renderGraph(v, eT, col) {
+        const palette = ["#FF5252", "#4CAF50", "#2196F3", "#FFEB3B", "#9C27B0", "#FF9800", "#00BCD4", "#795548", "#607D8B", "#E91E63"];
+        let ns = [], es = [];
+        for(let i=0; i<v; i++) ns.push({id:i, label:`${i}`, color: palette[col[i]%10]});
+        eT.split('\n').forEach(l => { let p=l.split('-'); if(p.length===2) es.push({from:parseInt(p[0]), to:parseInt(p[1])}); });
+        new vis.Network(document.getElementById('mynetwork'), {nodes:new vis.DataSet(ns), edges:new vis.DataSet(es)}, {nodes:{shape:'circle'}});
+    }
+
+    function toggleFullscreen(id) { const el = document.getElementById(id); if (!document.fullscreenElement) el.requestFullscreen(); else document.exitFullscreen(); }
+
+    window.onload = () => { renderVideoGrid(); };
+</script>
+</body>
+</html>
