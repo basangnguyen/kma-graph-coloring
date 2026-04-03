@@ -1,11 +1,33 @@
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div style="padding: 10px; margin-bottom: 15px; border-radius: 5px; font-size: 0.9em; 
-                  background: {% if category == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; 
-                  color: {% if category == 'success' %}#155724{% else %}#721c24{% endif %};">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>KMA - Đăng nhập</title>
+    <style>
+        body { font-family: sans-serif; background: #eceff1; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #0054a5; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>ĐĂNG NHẬP</h2>
+        <!-- Hiển thị thông báo lỗi nếu có -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <p style="color: red; font-size: 0.8em;">{{ message }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Tên đăng nhập" required>
+            <input type="password" name="password" placeholder="Mật khẩu" required>
+            <button type="submit">VÀO HỆ THỐNG</button>
+        </form>
+        <p style="font-size: 0.8em;">Chưa có tài khoản? <a href="/register">Đăng ký</a></p>
+    </div>
+</body>
+</html>
