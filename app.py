@@ -3,24 +3,29 @@ import sqlite3
 import os
 
 app = Flask(__name__)
-app.secret_key = 'kma_secret_key' # Thay đổi tùy ý
+app.secret_key = os.environ.get('SECRET_KEY', 'kma_secret_key') # Ưu tiên lấy từ biến môi trường
+
+# Đường dẫn DB tuyệt đối để tránh lỗi không tìm thấy file trên server
+DB_PATH = os.path.join(os.path.dirname(__file__), 'database.db')
 
 def get_db_connection():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
-# Khởi tạo DB nếu chưa có
 def init_db():
-    conn = get_db_connection()
-    conn.execute('''CREATE TABLE IF NOT EXISTS Users 
-                    (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                     username TEXT UNIQUE, 
-                     password TEXT)''')
-    conn.commit()
-    conn.close()
+    with app.app_context(): # Chạy trong context của Flask
+        conn = get_db_connection()
+        conn.execute('''CREATE TABLE IF NOT EXISTS Users 
+                        (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                         username TEXT UNIQUE, 
+                         password TEXT)''')
+        conn.commit()
+        conn.close()
 
-init_db()
+# Chỉ khởi tạo nếu file DB chưa tồn tại hoặc chạy lần đầu
+if not os.path.exists(DB_PATH):
+    init_db()
 
 @app.route('/')
 def home():
@@ -31,23 +36,31 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
         conn = get_db_connection()
         user = conn.execute('SELECT * FROM Users WHERE username = ? AND password = ?', 
                             (username, password)).fetchone()
         conn.close()
+        
         if user:
             session['user'] = user['username']
             return redirect(url_for('home'))
+        
         flash("Sai tài khoản hoặc mật khẩu!", "danger")
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if not username or not password:
+            flash("Vui lòng nhập đầy đủ thông tin!", "warning")
+            return redirect(url_for('register'))
+
         conn = get_db_connection()
         try:
             conn.execute('INSERT INTO Users (username, password) VALUES (?, ?)', 
@@ -55,17 +68,19 @@ def register():
             conn.commit()
             flash("Đăng ký thành công! Mời bạn đăng nhập.", "success")
             return redirect(url_for('login'))
-        except:
+        except sqlite3.IntegrityError:
             flash("Tên đăng nhập đã tồn tại!", "warning")
+        except Exception as e:
+            flash(f"Lỗi hệ thống: {str(e)}", "danger")
         finally:
             conn.close()
     return render_template('register.html')
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
+    session.clear() # Xóa sạch session cho an toàn
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    # Chạy local
+    app.run(debug=True)
