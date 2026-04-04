@@ -359,6 +359,25 @@
             #music-player { left: 10px; bottom: 80px; max-width: 180px; }
         }
     </style>
+   <!-- Thư viện hỗ trợ trình duyệt cũ -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+<!-- Cấu hình MathJax: Quan trọng nhất là đoạn inlineMath -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+
+<!-- Tải thư viện MathJax chính -->
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -456,27 +475,227 @@
 </div>
 
 <div id="theory-tab" class="content-section panel full-width">
-    <h2 data-i18n="theory-title">Lý thuyết Tô màu đồ thị</h2>
-    <p>Bài toán tô màu đồ thị là việc gán màu cho các đỉnh sao cho không có hai đỉnh kề nhau nào cùng màu.</p>
-    
+    <div class="theory-container" style="max-width: 900px; margin: 0 auto; line-height: 1.8; color: var(--text);">
+        
+        <!-- Header chính -->
+        <div style="text-align: center; margin-bottom: 50px; border-bottom: 3px double var(--primary); padding-bottom: 20px;">
+            <h1 style="color: var(--kma-red); margin-bottom: 10px; font-size: 2.2rem; letter-spacing: 2px;">TOÁN RỜI RẠC: LÝ THUYẾT TÔ MÀU ĐỒ THỊ</h1>
+            <p style="font-weight: 600; color: var(--primary); opacity: 0.8;">HỌC VIỆN KỸ THUẬT MẬT MÃ - KHOA CÔNG NGHỆ THÔNG TIN</p>
+        </div>
 
-[Image of graph coloring theorem]
+        <!-- Phần 1: Định nghĩa -->
+        <section class="theory-part" style="margin-bottom: 40px;">
+            <h2 style="display: flex; align-items: center; gap: 10px; color: var(--primary);">
+                <i class="fas fa-book-open"></i> 1. Định nghĩa và Khái niệm cơ bản
+            </h2>
+            <div style="background: var(--card); padding: 25px; border-radius: 15px; border-left: 8px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <p><b>Tô màu đỉnh:</b> Cho đồ thị $G = (V, E)$, một phép tô màu đỉnh là việc gán cho mỗi đỉnh $v \in V$ một màu sao cho không có hai đỉnh kề nhau nào có cùng màu.</p>
+                <p><b>Sắc số $\chi(G)$:</b> Là số nguyên dương $k$ nhỏ nhất sao cho đồ thị $G$ có thể được tô bằng $k$ màu. Khi đó $G$ được gọi là đồ thị $k$-sắc.</p>
+                
+                <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: rgba(0,84,165,0.05); padding: 10px; border-radius: 8px;">
+                        <i class="fas fa-check-circle" style="color: #27ae60;"></i> <b>Đồ thị đầy đủ $K_n$:</b> $\chi(K_n) = n$
+                    </div>
+                    <div style="background: rgba(0,84,165,0.05); padding: 10px; border-radius: 8px;">
+                        <i class="fas fa-check-circle" style="color: #27ae60;"></i> <b>Đồ thị lưỡng phân:</b> $\chi(G) = 2$
+                    </div>
+                </div>
+            </div>
+        </section>
 
-</div>
+        http://googleusercontent.com/image_content/171
 
-<div id="slide-tab" class="content-section panel full-width">
-    <h2 data-i18n="slide-header">📂 Slide giáo trình & Tài liệu</h2>
-    <input type="text" id="slide-search" placeholder="🔍 Tìm kiếm tài liệu..." onkeyup="filterSlides()" style="margin-bottom:15px; border:2px solid var(--primary);">
-    <div class="slide-controls" id="slide-list">
-        <button class="slide-btn" onclick="loadPdf('static/docs/chuong2.pdf', 'slide-frame', 'slide-placeholder')">Chương 2</button>
-        <button class="slide-btn" onclick="loadPdf('static/docs/chuong3.pdf', 'slide-frame', 'slide-placeholder')">Chương 3</button>
-        <button class="slide-btn" onclick="loadPdf('static/docs/chuong4.pdf', 'slide-frame', 'slide-placeholder')">Chương 4</button>
-        <button class="slide-btn" onclick="loadPdf('static/docs/chuong41.pdf', 'slide-frame', 'slide-placeholder')">Chương 4.1</button>
-        <button class="slide-btn" onclick="loadPdf('static/docs/chuong43.pdf', 'slide-frame', 'slide-placeholder')">Chương 4.3</button>
+
+
+        <!-- Phần 2: Các định lý -->
+        <section class="theory-part" style="margin-bottom: 40px;">
+            <h2 style="color: var(--primary);"><i class="fas fa-graduation-cap"></i> 2. Các định lý quan trọng</h2>
+            <table style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
+                <tr>
+                    <td style="background: var(--kma-red); color: white; padding: 15px; border-radius: 10px 0 0 10px; width: 180px; font-weight: bold;">Định lý Brook</td>
+                    <td style="background: var(--card); padding: 15px; border-radius: 0 10px 10px 0; border: 1px solid #ddd;">
+                        Với mọi đồ thị liên thông $G$ (không phải $K_n$ hoặc vòng lẻ), ta luôn có: $\chi(G) \leq \Delta(G)$.
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background: #2c3e50; color: white; padding: 15px; border-radius: 10px 0 0 10px; font-weight: bold;">Bài toán 4 màu</td>
+                    <td style="background: var(--card); padding: 15px; border-radius: 0 10px 10px 0; border: 1px solid #ddd;">
+                        Mọi đồ thị phẳng (có thể vẽ trên mặt phẳng mà không có các cạnh cắt nhau) đều có $\chi(G) \leq 4$.
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Phần 3: Thuật toán Quay lui -->
+        <section class="theory-part" style="margin-bottom: 40px;">
+            <h2 style="color: var(--primary);"><i class="fas fa-code"></i> 3. Phân tích thuật toán Quay lui (Backtracking)</h2>
+            <p>Đây là giải thuật tìm lời giải <b>Chính xác (Exact)</b>. Quy trình xử lý như sau:</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="background: var(--primary); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">1</span>
+                    <span>Thử tô màu từ màu số 1 đến số $m$.</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="background: var(--primary); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">2</span>
+                    <span>Tại mỗi đỉnh $v$, kiểm tra tính an toàn (không trùng màu với các đỉnh kề đã tô).</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="background: var(--kma-red); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">3</span>
+                    <span>Nếu ngõ cụt, thực hiện <b>Quay lui</b> để đổi màu đỉnh trước đó cho đến khi hết đỉnh.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phần 4: Ứng dụng thực tế -->
+        <section class="theory-part" style="margin-top: 50px; padding: 30px; background: linear-gradient(145deg, #ffffff, #f0f0f0); border-radius: 20px; box-shadow: inset 5px 5px 10px #e6e6e6, inset -5px -5px 10px #ffffff;">
+            <h2 style="text-align: center; color: var(--kma-red);"><i class="fas fa-lightbulb"></i> ỨNG DỤNG THỰC TIỄN</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="text-align: center; padding: 15px;">
+                    <i class="fas fa-calendar-alt" style="font-size: 2.5rem; color: var(--primary);"></i>
+                    <h4 style="margin: 10px 0;">Lập lịch thi</h4>
+                    <p style="font-size: 0.85rem;">Tránh trùng ca thi cho sinh viên có cùng môn học.</p>
+                </div>
+                <div style="text-align: center; padding: 15px;">
+                    <i class="fas fa-broadcast-tower" style="font-size: 2.5rem; color: var(--primary);"></i>
+                    <h4 style="margin: 10px 0;">Cấp tần số</h4>
+                    <p style="font-size: 0.85rem;">Tránh nhiễu sóng giữa các trạm thu phát gần nhau.</p>
+                </div>
+                <div style="text-align: center; padding: 15px;">
+                    <i class="fas fa-microchip" style="font-size: 2.5rem; color: var(--primary);"></i>
+                    <h4 style="margin: 10px 0;">Tối ưu CPU</h4>
+                    <p style="font-size: 0.85rem;">Phân bổ thanh ghi hiệu quả trong trình biên dịch.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer Lý thuyết -->
+        <footer style="margin-top: 40px; text-align: center; font-size: 0.9rem; color: #7f8c8d; border-top: 1px solid #ddd; padding-top: 20px;">
+            <p>© 2026 Học viện Kỹ thuật Mật mã - Giáo trình số hóa</p>
+        </footer>
     </div>
-    <div id="slide-placeholder" class="placeholder"><p style="font-size: 3rem;">📄</p>Chọn tài liệu để xem</div>
-    <iframe id="slide-frame" class="doc-frame" style="display:none"></iframe>
 </div>
+<div id="slide-tab" class="content-section panel full-width" style="background: #f4f7f9; padding: 30px; border-radius: 20px;">
+    
+    <!-- Header & Search -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+        <div>
+            <h2 style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">📂</span> Slide Giáo Trình & Tài Liệu
+            </h2>
+            <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9rem;">Hệ thống bài giảng điện tử Học viện Kỹ thuật Mật mã</p>
+        </div>
+        <div style="position: relative; width: 100%; max-width: 400px;">
+            <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;">🔍</span>
+            <input type="text" id="slide-search" placeholder="Tìm kiếm chương học, tên tài liệu..." onkeyup="filterSlides()" 
+                style="width: 100%; padding: 12px 15px 12px 45px; border: 2px solid #e1e4e8; border-radius: 12px; outline: none; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+        </div>
+    </div>
+
+    <!-- Slide Grid List -->
+    <div class="slide-grid" id="slide-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px;">
+        
+        <!-- Item 1 -->
+        <div class="slide-item" onclick="loadPdf('static/docs/chuong2.pdf', 'slide-frame', 'slide-placeholder')" style="cursor: pointer; background: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📄</div>
+            <div style="font-weight: 700; color: #333;">Chương 2</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Tài liệu PDF</div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="slide-item" onclick="loadPdf('static/docs/chuong3.pdf', 'slide-frame', 'slide-placeholder')" style="cursor: pointer; background: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; transition: all 0.3s ease;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📄</div>
+            <div style="font-weight: 700; color: #333;">Chương 3</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Tài liệu PDF</div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="slide-item" onclick="loadPdf('static/docs/chuong4.pdf', 'slide-frame', 'slide-placeholder')" style="cursor: pointer; background: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; transition: all 0.3s ease;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📄</div>
+            <div style="font-weight: 700; color: #333;">Chương 4</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Tài liệu PDF</div>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="slide-item" onclick="loadPdf('static/docs/chuong41.pdf', 'slide-frame', 'slide-placeholder')" style="cursor: pointer; background: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; transition: all 0.3s ease;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📊</div>
+            <div style="font-weight: 700; color: #333;">Chương 4.1</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Bổ sung</div>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="slide-item" onclick="loadPdf('static/docs/chuong43.pdf', 'slide-frame', 'slide-placeholder')" style="cursor: pointer; background: white; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #eee; transition: all 0.3s ease;">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">📊</div>
+            <div style="font-weight: 700; color: #333;">Chương 4.3</div>
+            <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Bổ sung</div>
+        </div>
+    </div>
+
+    <!-- Viewer Section -->
+    <div id="viewer-container" style="background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e1e4e8; min-height: 600px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <div id="slide-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 600px; color: #bdc3c7;">
+            <div style="font-size: 5rem; margin-bottom: 20px; opacity: 0.5;">📖</div>
+            <p style="font-size: 1.2rem; font-weight: 500;">Chọn một chương ở trên để bắt đầu đọc</p>
+            <p style="font-size: 0.9rem;">Hệ thống hỗ trợ xem trực tiếp file PDF</p>
+        </div>
+        <iframe id="slide-frame" class="doc-frame" style="display:none; width: 100%; height: 800px; border: none;"></iframe>
+    </div>
+
+</div>
+
+<!-- CSS bổ sung để xử lý hiệu ứng Hover & Search (Dán vào thẻ style của bạn) -->
+<style>
+    .slide-item:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary) !important;
+        box-shadow: 0 8px 15px rgba(0,84,165,0.1) !important;
+    }
+    .slide-item.active {
+        background: var(--primary) !important;
+        color: white !important;
+    }
+    .slide-item.active div {
+        color: white !important;
+    }
+    #slide-search:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px rgba(0,84,165,0.1) !important;
+    }
+    @media (max-width: 600px) {
+        .slide-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+
+<!-- Cập nhật lại JS một chút để có hiệu ứng active -->
+<script>
+    function loadPdf(url, frameId, placeholderId) {
+        const frame = document.getElementById(frameId);
+        const placeholder = document.getElementById(placeholderId);
+        
+        // Hiện iframe, ẩn placeholder
+        frame.style.display = 'block';
+        placeholder.style.display = 'none';
+        frame.src = url;
+
+        // Cuộn xuống vùng xem tài liệu
+        document.getElementById('viewer-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function filterSlides() {
+        let input = document.getElementById('slide-search').value.toLowerCase();
+        let items = document.getElementsByClassName('slide-item');
+        
+        for (let i = 0; i < items.length; i++) {
+            let title = items[i].getElementsByTagName('div')[1].innerText;
+            if (title.toLowerCase().indexOf(input) > -1) {
+                items[i].style.display = "";
+            } else {
+                items[i].style.display = "none";
+            }
+        }
+    }
+</script>
 
 <div id="exam-tab" class="content-section panel full-width">
     <h2 data-i18n="exam-header">📝 Đề thi mẫu & Tài liệu ôn tập</h2>
@@ -525,11 +744,11 @@
     <div id="game-selection" class="exam-grid" style="margin-top: 20px;">
         <div class="exam-item" onclick="loadGame('static/docs/game.html')">
             <div class="exam-icon-box">🧩</div>
-            <div class="exam-info">Game 1: Gà con đi học</div>
+            <div class="exam-info">Game 1: Phi hành gia KMA</div>
         </div>
         <div class="exam-item" onclick="loadGame('static/docs/bird.html')">
             <div class="exam-icon-box">🚀</div>
-            <div class="exam-info">Game 2: Phi hành gia KMA</div>
+            <div class="exam-info">Game 2: Gà con đi học</div>
         </div>
     </div>
 
@@ -606,7 +825,10 @@
         const target = document.getElementById(t);
         target.style.display = (t === 'calc-tab' ? 'grid' : 'block'); 
         b.classList.add('active'); 
+        if (t === 'theory-tab' && window.MathJax) {
+        MathJax.typeset();
     }
+}
 
     function loadPdf(path, frameId, placeholderId, isExam = false) { 
         document.getElementById(placeholderId).style.display = 'none'; 
