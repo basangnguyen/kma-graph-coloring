@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Flappy Bird - Con gà đi học</title>
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #000; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        canvas { border: 5px solid #222; background-color: #71C5CF; box-shadow: 0 0 80px rgba(0,0,0,1); }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // --- CẤU HÌNH ---
+    const SCREEN_WIDTH = 1024;
+    const SCREEN_HEIGHT = 480; 
+    const GRAVITY = 0.08; 
+    const BIRD_JUMP = -3; 
+    const FLOOR_HEIGHT = 15;
+
+    // Tốc độ cơ bản và biến lưu trữ tốc độ thực tế
+    const BASE_PIPE_SPEED = 1.2;
+    let currentPipeSpeed = BASE_PIPE_SPEED;
+
+    const BG_URL = "background.png"; 
+    const backgroundImg = new Image();
+    backgroundImg.src = BG_URL;
+
+    const COLOR_SKY = "#71C5CF";
+    const COLOR_BIRD = "#FCD740";
+    const COLOR_GROUND = "#C8BE8C";
+    const COLOR_GOOD_GOLD = "#DAA520";
+
+    canvas.width = SCREEN_WIDTH;
+    canvas.height = SCREEN_HEIGHT;
+
+    let birdY, birdVel, birdTilt, score, gameActive, pipes, floorX, goodTimer;
+    const milestones = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65];
+
+    function resetGame() {
+        birdY = SCREEN_HEIGHT / 2;
+        birdVel = 0;
+        birdTilt = 0;
+        score = 0;
+        currentPipeSpeed = BASE_PIPE_SPEED; // Reset tốc độ khi chơi lại
+        pipes = [createPipe(SCREEN_WIDTH + 100)];
+        floorX = 0;
+        goodTimer = 0;
+        gameActive = true;
+    }
+
+    function createPipe(x) {
+        const randomGap = Math.floor(Math.random() * 41) + 140; 
+        return {
+            x: x,
+            gap: randomGap,
+            height: Math.floor(Math.random() * (SCREEN_HEIGHT - randomGap - 120)) + 50,
+            passed: false,
+            width: 75,
+            nextDist: Math.floor(Math.random() * 151) + 350 
+        };
+    }
+
+    function drawBird() {
+        ctx.save();
+        ctx.translate(150, birdY);
+        birdTilt = birdVel < 0 ? 25 : Math.max(-70, birdTilt - 5);
+        ctx.rotate(-birdTilt * Math.PI / 180);
+        let birdGrad = ctx.createRadialGradient(-5, -5, 2, 0, 0, 15);
+        birdGrad.addColorStop(0, "#FFF7AD"); 
+        birdGrad.addColorStop(1, COLOR_BIRD);
+        ctx.fillStyle = birdGrad;
+        ctx.beginPath(); ctx.ellipse(0, 0, 16, 13, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#000"; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(9, -4, 4.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(11, -4, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#FF6400";
+        ctx.beginPath(); ctx.moveTo(13, 2); ctx.lineTo(23, 4); ctx.lineTo(13, 8); ctx.fill();
+        ctx.restore();
+    }
+
+    function drawPipes() {
+        pipes.forEach(p => {
+            const drawPart = (y, h, isTop) => {
+                let pipeGrad = ctx.createLinearGradient(p.x, 0, p.x + p.width, 0);
+                pipeGrad.addColorStop(0, "#1a6b1a");
+                pipeGrad.addColorStop(0.2, "#34b334"); 
+                pipeGrad.addColorStop(0.25, "#98fb98"); 
+                pipeGrad.addColorStop(0.4, "#34b334");
+                pipeGrad.addColorStop(1, "#0d3d0d");
+                ctx.fillStyle = pipeGrad;
+                ctx.globalAlpha = 0.9; 
+                ctx.fillRect(p.x, y, p.width, h);
+                ctx.globalAlpha = 1.0;
+                ctx.strokeStyle = "#000"; ctx.lineWidth = 2; ctx.strokeRect(p.x, y, p.width, h);
+                let capY = isTop ? y + h - 22 : y;
+                ctx.fillStyle = pipeGrad;
+                ctx.fillRect(p.x - 6, capY, p.width + 12, 22);
+                ctx.strokeRect(p.x - 6, capY, p.width + 12, 22);
+            };
+            drawPart(0, p.height, true);
+            let lowerY = p.height + p.gap;
+            drawPart(lowerY, SCREEN_HEIGHT - lowerY - FLOOR_HEIGHT, false);
+        });
+    }
+
+    // --- HÀM VẼ TÊN GAME (ĐÃ DỊCH SANG PHẢI) ---
+    function drawGameTitle() {
+        const title = "Con gà đi học";
+        ctx.save();
+        ctx.font = "bold 22px 'Segoe UI'";
+        
+        const posX = 80; // Dịch từ 50 lên 80 để sang phải một chút
+        const posY = SCREEN_HEIGHT - 30;
+
+        ctx.fillStyle = "white";
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 4;
+        ctx.fillText(title, posX, posY);
+        ctx.restore();
+    }
+
+    function update() {
+        if (!gameActive) return;
+        birdVel += GRAVITY;
+        birdY += birdVel;
+        
+        // Cập nhật sàn và ống theo tốc độ hiện tại
+        floorX = (floorX - currentPipeSpeed) % SCREEN_WIDTH;
+        
+        pipes.forEach(p => {
+            p.x -= currentPipeSpeed;
+            if (150 + 8 > p.x && 150 - 8 < p.x + p.width) {
+                if (birdY - 7 < p.height || birdY + 7 > p.height + p.gap) gameActive = false;
+            }
+            if (!p.passed && p.x + p.width < 150) {
+                score++; 
+                p.passed = true;
+                
+                // TĂNG TỐC ĐỘ: Mỗi 5 điểm tăng tốc độ thêm 0.15
+                if (score % 5 === 0) {
+                    currentPipeSpeed += 0.15;
+                }
+
+                if (milestones.includes(score)) goodTimer = 100;
+            }
+        });
+        if (pipes[pipes.length - 1].x < SCREEN_WIDTH - pipes[pipes.length - 1].nextDist) {
+            pipes.push(createPipe(SCREEN_WIDTH));
+        }
+        if (pipes[0].x < -100) pipes.shift();
+        if (birdY >= SCREEN_HEIGHT - FLOOR_HEIGHT - 12 || birdY <= 0) gameActive = false;
+        if (goodTimer > 0) goodTimer--;
+    }
+
+    function render() {
+        ctx.fillStyle = COLOR_SKY;
+        ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        if (backgroundImg.complete) {
+            ctx.drawImage(backgroundImg, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        }
+
+        drawPipes();
+        ctx.fillStyle = COLOR_GROUND;
+        ctx.fillRect(floorX, SCREEN_HEIGHT - FLOOR_HEIGHT, SCREEN_WIDTH*2, FLOOR_HEIGHT);
+        drawBird();
+        
+        drawGameTitle();
+
+        // --- SCORE ---
+        ctx.save();
+        let scoreX = 75; 
+        let scoreY = 55; 
+        let goldGrad = ctx.createLinearGradient(scoreX, scoreY - 20, scoreX, scoreY + 5);
+        goldGrad.addColorStop(0, "#FFD700");
+        goldGrad.addColorStop(0.5, "#FFF");
+        goldGrad.addColorStop(1, "#DAA520");
+
+        ctx.font = "bold 28px 'Arial Black', sans-serif";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.fillStyle = goldGrad;
+        ctx.fillText(`SCORE: ${score}`, scoreX, scoreY);
+        ctx.restore();
+
+        if (goodTimer > 0) {
+            ctx.save();
+            ctx.textAlign = "center";
+            ctx.font = "900 48px 'Arial Black', sans-serif";
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = "#FFD700";
+            ctx.globalAlpha = goodTimer / 100;
+            ctx.strokeStyle = "#B8860B";
+            ctx.lineWidth = 6;
+            ctx.strokeText("GOOD!", SCREEN_WIDTH / 2, 110);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText("GOOD!", SCREEN_WIDTH / 2, 110);
+            ctx.restore();
+        }
+
+        if (!gameActive) {
+            ctx.fillStyle = "rgba(0,0,0,0.75)";
+            ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+            ctx.textAlign = "center";
+            
+            if (score === 0 && goodTimer === 0) {
+                ctx.fillStyle = "#FFF";
+                ctx.font = "bold 40px 'Segoe UI'";
+                ctx.fillText("NHẤN SPACE ĐỂ BẮT ĐẦU", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+            } else {
+                ctx.fillStyle = "#FF3D3D";
+                ctx.font = "bold 60px 'Arial Black'";
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = "red";
+                ctx.fillText("GAME OVER", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 60);
+                
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = "#FFF";
+                ctx.font = "30px 'Segoe UI'";
+                ctx.fillText(`Score: ${score}`, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 10);
+
+                const msg = "Đúng là con gà KMA!";
+                ctx.font = "italic bold 32px 'Segoe UI'";
+                let msgWidth = ctx.measureText(msg).width;
+                
+                ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+                ctx.beginPath();
+                ctx.roundRect(SCREEN_WIDTH/2 - msgWidth/2 - 20, SCREEN_HEIGHT/2 + 25, msgWidth + 40, 50, 10);
+                ctx.fill();
+                ctx.strokeStyle = "#FF0000";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = "#FF5555";
+                ctx.fillText(msg, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 60);
+                
+                ctx.font = "18px 'Segoe UI'";
+                ctx.fillStyle = "#AAA";
+                ctx.fillText("Nhấn Space để thử lại", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 110);
+            }
+        }
+        update();
+        requestAnimationFrame(render);
+    }
+
+    const input = (e) => { if (e.type === "mousedown" || (e.type === "keydown" && e.code === "Space")) { if (!gameActive) resetGame(); birdVel = BIRD_JUMP; } };
+    window.addEventListener("keydown", input);
+    window.addEventListener("mousedown", input);
+    resetGame(); gameActive = false; render();
+</script>
+</body>
+</html>
