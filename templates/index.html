@@ -521,8 +521,24 @@
         <h2>🎮 Giải trí</h2>
         <button class="slide-btn" id="stop-game-btn" onclick="stopGame()" style="border-color: var(--kma-red); color: var(--kma-red); display: none;">Dừng chơi</button>
     </div>
-    <div id="game-placeholder" class="placeholder"><p style="font-size: 3rem;">🕹️</p><button class="main-btn" style="width:200px" onclick="loadGame()">Bắt đầu Game</button></div>
-    <iframe id="game-frame" style="height: 600px; border: none; width: 100%; display: none;"></iframe>
+
+    <div id="game-selection" class="exam-grid" style="margin-top: 20px;">
+        <div class="exam-item" onclick="loadGame('static/docs/game.html')">
+            <div class="exam-icon-box">🧩</div>
+            <div class="exam-info">Game 1: Gà con đi học</div>
+        </div>
+        <div class="exam-item" onclick="loadGame('static/docs/bird.html')">
+            <div class="exam-icon-box">🚀</div>
+            <div class="exam-info">Game 2: Phi hành gia KMA</div>
+        </div>
+    </div>
+
+    <div id="game-placeholder" class="placeholder" style="display:none">
+        <p style="font-size: 3rem;">🕹️</p>
+        <p>Vui lòng chọn một trò chơi bên trên</p>
+    </div>
+    
+    <iframe id="game-frame" style="height: 600px; border: none; width: 100%; display: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></iframe>
 </div>
 
 <script>
@@ -636,9 +652,26 @@
 
     function stopYoutube() { document.getElementById('yt-frame').src = ""; }
 
-    function loadGame() { document.getElementById('game-placeholder').style.display = 'none'; document.getElementById('stop-game-btn').style.display = 'block'; const frame = document.getElementById('game-frame'); frame.style.display = 'block'; frame.src = 'static/docs/game.html'; }
-    function stopGame() { const frame = document.getElementById('game-frame'); frame.src = "about:blank"; frame.style.display = 'none'; document.getElementById('game-placeholder').style.display = 'flex'; document.getElementById('stop-game-btn').style.display = 'none'; }
+  function loadGame(path) { 
+    // Ẩn menu chọn và hiện frame game
+    document.getElementById('game-selection').style.display = 'none'; 
+    document.getElementById('game-placeholder').style.display = 'none'; 
+    document.getElementById('stop-game-btn').style.display = 'block'; 
+    
+    const frame = document.getElementById('game-frame'); 
+    frame.style.display = 'block'; 
+    frame.src = path; 
+}
 
+function stopGame() { 
+    const frame = document.getElementById('game-frame'); 
+    frame.src = "about:blank"; 
+    frame.style.display = 'none'; 
+    
+    // Hiện lại menu chọn game
+    document.getElementById('game-selection').style.display = 'grid'; 
+    document.getElementById('stop-game-btn').style.display = 'none'; 
+}
     function main() {
         const v = parseInt(document.getElementById('vertices').value);
         const eT = document.getElementById('edges').value.trim();
