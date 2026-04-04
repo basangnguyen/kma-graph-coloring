@@ -445,34 +445,252 @@
     <button class="tab-btn" onclick="showTab('game-tab', this)" style="background: #ffcc00; color: #333;">🎮 Game</button>
 </div>
 
-<div id="calc-tab" class="content-section active">
-    <div class="left-col">
-        <div class="panel">
-            <h2 data-i18n="input-header">⚙️ Nhập liệu</h2>
-            <label data-i18n="label-vertices">Số đỉnh:</label>
-            <input type="number" id="vertices" value="5">
-            <label data-i18n="label-edges">Cạnh (u-v):</label>
-            <textarea id="edges" rows="5">0-1&#10;1-2&#10;2-3&#10;3-0&#10;0-2</textarea>
-            <button class="main-btn" onclick="main()" data-i18n="btn-run">Chạy thuật toán</button>
+<!-- TAB TÍNH TOÁN - PHIÊN BẢN TỐI ƯU HÀI HÒA (ROSE & CRIMSON) -->
+<div id="calc-tab" class="content-section active" style="display: grid; grid-template-columns: 380px 1fr; gap: 20px; background: #fff1f2; padding: 25px; font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 800px;">
+    
+    <!-- CỘT TRÁI: ĐIỀU KHIỂN & CẤU HÌNH -->
+    <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- PANEL CẤU HÌNH -->
+        <div class="panel shadow" style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #fecdd3; box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.05);">
+            <h2 style="font-size: 1rem; color: #881337; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; margin-top:0; font-weight: 800; letter-spacing: -0.02em;">
+                <span style="background: #ffe4e6; padding: 6px; border-radius: 8px; border: 1px solid #fecdd3;">⚙️</span> Cấu hình Đồ thị
+            </h2>
+            
+            <div style="margin-bottom: 18px;">
+                <label style="font-size: 0.7rem; font-weight: 800; color: #be123c; letter-spacing: 0.05em; text-transform: uppercase;">Đồ thị mẫu</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+                    <button onclick="graphLab.genSpecial('petersen')" class="small-btn">Petersen</button>
+                    <button onclick="graphLab.genSpecial('complete')" class="small-btn">Đầy đủ (K5)</button>
+                    <button onclick="graphLab.genSpecial('cycle')" class="small-btn">Vòng (C6)</button>
+                    <button onclick="graphLab.generateRandom()" class="small-btn" style="background: #e11d48; color: white; border: none; font-weight: 700;">Ngẫu nhiên</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <label style="font-size: 0.7rem; font-weight: 800; color: #be123c; letter-spacing: 0.05em; text-transform: uppercase;">Thuật toán</label>
+                <select id="algo-select" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #fecdd3; background: #fffafb; margin-top: 8px; cursor: pointer; font-weight: 600; color: #881337; font-family: inherit;">
+                    <option value="greedy">Greedy (Tham lam)</option>
+                    <option value="welsh-powell">Welsh-Powell (Tối ưu bậc)</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 90px 1fr; gap: 12px; margin-bottom: 18px;">
+                <div>
+                    <label style="font-size: 0.7rem; font-weight: 800; color: #be123c;">Số Đỉnh</label>
+                    <input type="number" id="vertices" value="5" min="1" style="width: 100%; padding: 10px; border: 1px solid #fecdd3; border-radius: 8px; background: #fffafb; font-weight: 700; color: #e11d48; font-family: 'JetBrains Mono', monospace;">
+                </div>
+                <div>
+                    <label style="font-size: 0.7rem; font-weight: 800; color: #be123c;">Cạnh (u-v)</label>
+                    <textarea id="edges" rows="4" style="width: 100%; padding: 10px; border: 1px solid #fecdd3; border-radius: 8px; background: #fffafb; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; resize: none; color: #881337; line-height: 1.4;">0-1&#10;1-2&#10;2-3&#10;3-0&#10;0-2</textarea>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <button onclick="graphLab.startStepByStep()" class="action-btn" style="background: #fff; border: 1.5px solid #fb7185; color: #e11d48; font-weight: 700;">⏩ Từng bước</button>
+                <button onclick="graphLab.runMain()" class="action-btn" style="background: #9f1239; color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(159, 18, 57, 0.25);">🚀 Chạy ngay</button>
+            </div>
         </div>
-        <div class="panel">
-            <h2 data-i18n="result-header">📊 Kết quả</h2>
-            <div id="stats" data-i18n="no-data">Chưa có dữ liệu</div>
+
+        <!-- PANEL PHÂN TÍCH -->
+        <div class="panel shadow" style="background: #fff1f2; border-radius: 16px; padding: 24px; border: 1px solid #fecdd3; color: #881337; box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.05);">
+            <h2 style="font-size: 1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; margin-top:0; font-weight: 800;">
+                <span style="background: white; padding: 5px; border-radius: 8px; border: 1px solid #fecdd3;">🔍</span> Phân tích đồ thị
+            </h2>
+            <div id="graph-props" style="font-size: 0.85rem; line-height: 2;">
+                <div class="prop-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid #fecdd3; padding: 8px 0;">
+                    <span style="font-weight: 500; color: #be123c;">Bậc lớn nhất (Δ):</span> 
+                    <b id="max-deg" style="color: #e11d48; font-family: 'JetBrains Mono'; font-size: 0.95rem;">-</b>
+                </div>
+                <div class="prop-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid #fecdd3; padding: 8px 0;">
+                    <span style="font-weight: 500; color: #be123c;">Sắc số dự đoán:</span> 
+                    <b id="chromatic-est" style="color: #9f1239; font-family: 'JetBrains Mono'; font-size: 0.95rem;">-</b>
+                </div>
+                <div class="prop-row" style="display: flex; justify-content: space-between; border-bottom: 1px solid #fecdd3; padding: 8px 0;">
+                    <span style="font-weight: 500; color: #be123c;">Mật độ:</span> 
+                    <b id="graph-density" style="color: #e11d48; font-family: 'JetBrains Mono'; font-size: 0.95rem;">-</b>
+                </div>
+                <div class="prop-row" style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <span style="font-weight: 500; color: #be123c;">Tổng số cạnh:</span> 
+                    <b id="edge-count" style="color: #e11d48; font-family: 'JetBrains Mono'; font-size: 0.95rem;">-</b>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="right-col">
-        <div class="panel">
-            <h2 data-i18n="graph-header">🖼️ Đồ thị trực quan</h2>
-            <button class="fullscreen-btn" onclick="toggleFullscreen('mynetwork')">⛶</button>
-            <div id="mynetwork"></div>
+
+    <!-- CỘT PHẢI: TRỰC QUAN & BÁO CÁO -->
+    <div class="right-col" style="display: flex; flex-direction: column; gap: 20px;">
+        <div id="report-area" class="fullscreen-target panel" style="background: white; border-radius: 20px; padding: 25px; border: 1px solid #fecdd3; position: relative; min-height: 550px; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(159, 18, 57, 0.03);">
+            <div class="toolbar" style="position: absolute; top: 20px; right: 20px; z-index: 10; display: flex; gap: 8px;">
+                <button onclick="graphLab.toggleFullscreen('report-area')" class="tool-icon">🖥️</button>
+                <button onclick="graphLab.exportImage()" class="tool-icon">🖼️</button>
+                <button onclick="graphLab.zoomIn()" class="tool-icon" style="font-weight: 900;">+</button>
+                <button onclick="graphLab.zoomOut()" class="tool-icon" style="font-weight: 900;">-</button>
+            </div>
+            
+            <h3 id="report-title" style="margin-top: 0; color: #881337; font-weight: 800; font-size: 1.1rem; margin-bottom: 20px;">📊 Dashboard Trực quan</h3>
+            <div id="mynetwork" style="flex-grow: 1; min-height: 430px; background: #fffafb; border-radius: 16px; border: 2px dashed #fecdd3;"></div>
+            
+            <!-- STEP CONTROLS ĐỒNG BỘ MÀU -->
+            <div id="step-controls" style="display: none; justify-content: center; align-items: center; gap: 25px; margin-top: 20px; background: #881337; padding: 12px; border-radius: 14px; color: white;">
+                <button onclick="graphLab.prevStep()" class="nav-btn" style="background: #be123c; border-radius: 8px;">上 Trước</button>
+                <span id="step-info" style="font-weight: 800; font-family: 'JetBrains Mono'; color: #fecdd3; font-size: 1rem;">ĐỈNH: -</span>
+                <button onclick="graphLab.nextStep()" class="nav-btn" style="background: #e11d48; border-radius: 8px;">Sau 下</button>
+                <button onclick="graphLab.stopStep()" style="color: #fecdd3; border: none; background: none; cursor: pointer; font-weight: bold; font-size: 0.8rem; text-transform: uppercase;">Thoát</button>
+            </div>
         </div>
-        <div id="matrix-display" class="panel matrix-container">
-            <h2 data-i18n="matrix-header">🔢 Ma trận kề</h2>
-            <button class="fullscreen-btn" onclick="toggleFullscreen('matrix-display')">⛶</button>
-            <div id="matrix-table-wrapper"></div>
+
+        <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px;">
+            <!-- PANEL MA TRẬN KỀ -->
+            <div id="matrix-panel" class="fullscreen-target panel" style="background: white; border-radius: 20px; padding: 25px; border: 1px solid #fecdd3; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 0.75rem; margin: 0; color: #9f1239; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800;">🔢 Ma trận kề (Crimson)</h3>
+                    <button onclick="graphLab.toggleFullscreen('matrix-panel')" class="tool-icon" style="width: 30px; height: 30px;">🖥️</button>
+                </div>
+                <div id="matrix-table-wrapper" style="overflow: auto; flex-grow: 1; display: flex; justify-content: center; padding: 5px;"></div>
+            </div>
+
+            <!-- PANEL HIỆU NĂNG -->
+            <div class="panel" style="background: white; border-radius: 20px; padding: 25px; border: 1px solid #fecdd3;">
+                <h3 style="font-size: 0.75rem; margin-bottom: 20px; color: #9f1239; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800;">⚖️ Hiệu năng</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="background: #fff1f2; padding: 12px; border-radius: 12px; border-left: 4px solid #fda4af;">
+                        <div style="font-size: 0.6rem; color: #be123c; font-weight: 800; text-transform: uppercase;">Thuật toán</div>
+                        <div id="res-algo" style="font-weight: 800; color: #881337; font-size: 0.9rem;">-</div>
+                    </div>
+                    <div style="background: #fff1f2; padding: 12px; border-radius: 12px; border-left: 4px solid #fb7185;">
+                        <div style="font-size: 0.6rem; color: #be123c; font-weight: 800; text-transform: uppercase;">Thời gian</div>
+                        <div id="res-time" style="font-weight: 800; color: #e11d48; font-size: 0.9rem; font-family: 'JetBrains Mono';">0ms</div>
+                    </div>
+                    <div style="background: #9f1239; padding: 15px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 0.6rem; color: #fecdd3; font-weight: 800; text-transform: uppercase;">Sắc số χ(G)</div>
+                        <div id="res-colors" style="font-weight: 900; color: #ffffff; font-size: 1.6rem; font-family: 'JetBrains Mono';">0</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+<style>
+    .small-btn { padding: 8px; font-size: 0.75rem; border: 1px solid #fecdd3; background: white; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 600; color: #9f1239; }
+    .small-btn:hover { background: #fff1f2; border-color: #fb7185; }
+    .action-btn { padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; border: none; font-size: 0.85rem; }
+    .tool-icon { background: #fffafb; border: 1px solid #fecdd3; width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .tool-icon:hover { background: #ffe4e6; transform: translateY(-2px); }
+    .nav-btn { color: white; border: none; padding: 10px 22px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+    .nav-btn:hover { opacity: 0.9; transform: scale(1.05); }
+    
+    /* CSS MA TRẬN KỀ ĐỎ CRIMSON */
+    #matrix-table-wrapper table { border-collapse: separate; border-spacing: 4px; font-family: 'JetBrains Mono', monospace; }
+    #matrix-table-wrapper th { color: #f43f5e; background: transparent; font-size: 0.7rem; padding: 5px; font-weight: 800; }
+    #matrix-table-wrapper td { width: 34px; height: 34px; text-align: center; border-radius: 8px; font-size: 0.95rem; transition: all 0.2s ease; cursor: default; }
+
+    .fullscreen-target:fullscreen { width: 100vw !important; height: 100vh !important; padding: 50px !important; background: #ffffff !important; }
+</style>
+
+<script>
+const graphLab = {
+    network: null,
+    nodes: new vis.DataSet([]),
+    edges: new vis.DataSet([]),
+    coloringSteps: [],
+    currentIdx: -1,
+    // Bảng màu rực rỡ để tương phản với tông đỏ
+    colors: ["#e11d48", "#10b981", "#3b82f6", "#f59e0b", "#8b5cf6", "#ec4899", "#06b6d4", "#71717a"],
+
+    init() {
+        const container = document.getElementById('mynetwork');
+        const data = { nodes: this.nodes, edges: this.edges };
+        const options = {
+            nodes: { shape: 'dot', size: 22, font: { size: 14, face: 'Inter', weight: '700' }, borderWidth: 2 },
+            edges: { color: { color: '#fecdd3', highlight: '#e11d48' }, width: 2, smooth: { type: 'discrete' } },
+            physics: { stabilization: true, barnesHut: { gravitationalConstant: -3000, springLength: 150 } }
+        };
+        this.network = new vis.Network(container, data, options);
+        this.runMain();
+    },
+
+    runMain() {
+        const vCount = parseInt(document.getElementById('vertices').value) || 0;
+        const edgeData = document.getElementById('edges').value.trim();
+        const algo = document.getElementById('algo-select').value;
+        const startTime = performance.now();
+        this.nodes.clear(); this.edges.clear();
+        let adj = Array.from({length: vCount}, () => []);
+        let matrix = Array.from({length: vCount}, () => Array(vCount).fill(0));
+
+        if (edgeData) {
+            edgeData.split('\n').forEach(line => {
+                const parts = line.split('-');
+                if (parts.length === 2) {
+                    const u = parseInt(parts[0]), v = parseInt(parts[1]);
+                    if (u < vCount && v < vCount) {
+                        adj[u].push(v); adj[v].push(u);
+                        matrix[u][v] = 1; matrix[v][u] = 1;
+                    }
+                }
+            });
+        }
+        for(let i=0; i<vCount; i++) this.nodes.add({id: i, label: i.toString(), color: { background: '#fff', border: '#fecdd3' }});
+        for(let i=0; i<vCount; i++) {
+            for(let j=i+1; j<vCount; j++) { if(matrix[i][j]) this.edges.add({from: i, to: j}); }
+        }
+        let result = new Array(vCount).fill(-1);
+        let order = Array.from({length: vCount}, (_, i) => i);
+        if (algo === 'welsh-powell') order.sort((a, b) => adj[b].length - adj[a].length);
+        order.forEach(u => {
+            let available = new Array(vCount).fill(true);
+            adj[u].forEach(v => { if (result[v] !== -1) available[result[v]] = false; });
+            result[u] = available.indexOf(true);
+        });
+        this.coloringSteps = order.map(nodeIdx => ({ id: nodeIdx, color: this.colors[result[nodeIdx] % this.colors.length] }));
+        this.coloringSteps.forEach(step => this.nodes.update({id: step.id, color: { background: step.color, border: step.color, font: {color: '#fff'} }}));
+        
+        document.getElementById('res-algo').innerText = algo === 'greedy' ? 'GREEDY' : 'WELSH-POWELL';
+        document.getElementById('res-time').innerText = (performance.now() - startTime).toFixed(2) + "ms";
+        document.getElementById('res-colors').innerText = new Set(result).size;
+        const maxDeg = Math.max(...adj.map(a => a.length), 0);
+        document.getElementById('max-deg').innerText = maxDeg;
+        document.getElementById('chromatic-est').innerText = `≤ ${maxDeg + 1}`;
+        document.getElementById('edge-count').innerText = this.edges.length;
+        document.getElementById('graph-density').innerText = vCount > 1 ? (this.edges.length / (vCount*(vCount-1)/2)).toFixed(2) : 0;
+        this.renderMatrix(matrix);
+    },
+
+    renderMatrix(m) {
+        let h = '<table><thead><tr><th></th>' + m.map((_,i)=>`<th>${i}</th>`).join('') + '</tr></thead><tbody>';
+        m.forEach((row, i) => {
+            h += `<tr><th>${i}</th>` + row.map(v => {
+                // TÔNG ĐỎ CRIMSON CHO GIÁ TRỊ 1
+                const style = v ? 
+                    'background: #e11d48; color: #ffffff; border: 1px solid #9f1239; font-weight: 800; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);' : 
+                    'background: #fffafb; color: #fda4af; border: 1px solid #fff1f2; font-weight: 400;';
+                return `<td style="${style}">${v}</td>`;
+            }).join('') + '</tr>';
+        });
+        document.getElementById('matrix-table-wrapper').innerHTML = h + '</tbody></table>';
+    },
+
+    toggleFullscreen(id) {
+        const el = document.getElementById(id);
+        if (!document.fullscreenElement) {
+            el.requestFullscreen().then(() => { if(id === 'report-area' && this.network) setTimeout(() => this.network.fit(), 200); });
+        } else { document.exitFullscreen(); }
+    },
+    startStepByStep() { this.runMain(); this.currentIdx = -1; this.nodes.forEach(n => this.nodes.update({id: n.id, color: {background:'#fff', border:'#fecdd3'}, font:{color:'#881337'}})); document.getElementById('step-controls').style.display = 'flex'; this.nextStep(); },
+    nextStep() { if (this.currentIdx < this.coloringSteps.length - 1) { this.currentIdx++; const step = this.coloringSteps[this.currentIdx]; this.nodes.update({id: step.id, color: {background: step.color, border: step.color}, font:{color:'#fff'}}); document.getElementById('step-info').innerText = `ĐỈNH: ${step.id}`; } },
+    prevStep() { if (this.currentIdx >= 0) { const step = this.coloringSteps[this.currentIdx]; this.nodes.update({id: step.id, color: {background:'#fff', border:'#fecdd3'}, font:{color:'#881337'}}); this.currentIdx--; document.getElementById('step-info').innerText = this.currentIdx >= 0 ? `ĐỈNH: ${this.coloringSteps[this.currentIdx].id}` : "-"; } },
+    stopStep() { document.getElementById('step-controls').style.display = 'none'; this.runMain(); },
+    genSpecial(type) { const v = document.getElementById('vertices'); const e = document.getElementById('edges'); if(type==='petersen'){ v.value=10; e.value="0-1\n1-2\n2-3\n3-4\n4-0\n5-7\n7-9\n9-6\n6-8\n8-5\n0-5\n1-6\n2-7\n3-8\n4-9"; } if(type==='complete'){ v.value=5; e.value="0-1\n0-2\n0-3\n0-4\n1-2\n1-3\n1-4\n2-3\n2-4\n3-4"; } if(type==='cycle'){ v.value=6; e.value="0-1\n1-2\n2-3\n3-4\n4-5\n5-0"; } this.runMain(); },
+    generateRandom() { const v = parseInt(document.getElementById('vertices').value) || 5; let eList = []; for(let i=0; i<v; i++) { for(let j=i+1; j<v; j++) { if(Math.random() > 0.6) eList.push(`${i}-${j}`); } } document.getElementById('edges').value = eList.join('\n'); this.runMain(); },
+    zoomIn() { this.network.moveTo({scale: this.network.getScale() * 1.2}); },
+    zoomOut() { this.network.moveTo({scale: this.network.getScale() * 0.8}); },
+    exportImage() { const link = document.createElement('a'); link.download = 'graph.png'; link.href = document.querySelector('canvas').toDataURL(); link.click(); }
+};
+window.addEventListener('DOMContentLoaded', () => graphLab.init());
+</script>
 
 <div id="theory-tab" class="content-section panel full-width">
     <div class="theory-container" style="max-width: 900px; margin: 0 auto; line-height: 1.8; color: var(--text);">
@@ -742,15 +960,24 @@
     </div>
 
     <div id="game-selection" class="exam-grid" style="margin-top: 20px;">
-        <div class="exam-item" onclick="loadGame('static/docs/game.html')">
-            <div class="exam-icon-box">🧩</div>
-            <div class="exam-info">Game 1: Phi hành gia KMA</div>
+    <!-- GAME 1 -->
+    <div class="exam-item" onclick="loadGame('static/docs/game.html')" style="cursor: pointer;">
+        <div class="exam-icon-box" style="display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <!-- Thay 'duong-dan-anh-phi-hanh-gia.png' bằng file của bạn -->
+            <img src="duong-dan-anh-phi-hanh-gia.png" alt="Astronaut" style="width: 100%; height: 100%; object-fit: contain;">
         </div>
-        <div class="exam-item" onclick="loadGame('static/docs/bird.html')">
-            <div class="exam-icon-box">🚀</div>
-            <div class="exam-info">Game 2: Gà con đi học</div>
-        </div>
+        <div class="exam-info">Game 1: Phi hành gia KMA</div>
     </div>
+
+    <!-- GAME 2 -->
+    <div class="exam-item" onclick="loadGame('static/docs/bird.html')" style="cursor: pointer;">
+        <div class="exam-icon-box" style="display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <!-- Thay 'duong-dan-anh-ga-con.png' bằng file của bạn -->
+            <img src="duong-dan-anh-ga-con.png" alt="Bird" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <div class="exam-info">Game 2: Gà con đi học</div>
+    </div>
+</div>
 
     <div id="game-placeholder" class="placeholder" style="display:none">
         <p style="font-size: 3rem;">🕹️</p>
