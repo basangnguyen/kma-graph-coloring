@@ -140,7 +140,7 @@ def chat():
         return jsonify({"answer": response.text})
     except Exception as e:
         print(f"Lỗi Gemini: {e}")
-        return jsonify({"answer": "Xin lỗi, mình đang gặp chút trục trặc kỹ thuật. Thử lại sau nhé!"}), 500
+       return jsonify({"answer": f"Lỗi hệ thống: {str(e)}"}), 500
 
 @app.route('/logout')
 def logout():
