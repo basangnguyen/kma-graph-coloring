@@ -1,31 +1,51 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-import sqlite3
 import os
+import psycopg2
+from psycopg2 import IntegrityError
+from psycopg2.extras import RealDictCursor
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'kma_secret_key') # Ưu tiên lấy từ biến môi trường
+# Lấy SECRET_KEY từ Render, nếu chạy local thì dùng mặc định
+app.secret_key = os.environ.get('SECRET_KEY', 'kma_secret_key_sieu_bao_mat')
 
-# Đường dẫn DB tuyệt đối để tránh lỗi không tìm thấy file trên server
-DB_PATH = os.path.join(os.path.dirname(__file__), 'database.db')
-
+# ---------------------------------------------------------------------------
+# HÀM KẾT NỐI DATABASE (POSTGRESQL)
+# ---------------------------------------------------------------------------
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    # Render sẽ tự động cấp biến DATABASE_URL
+    db_url = os.environ.get('DATABASE_URL')
+    if not db_url:
+        raise ValueError("Chưa tìm thấy DATABASE_URL trong biến môi trường!")
+    
+    conn = psycopg2.connect(db_url)
     return conn
 
+# Tự động tạo bảng nếu chưa có (Chỉ chạy 1 lần khi app khởi động)
 def init_db():
-    with app.app_context(): # Chạy trong context của Flask
+    try:
         conn = get_db_connection()
-        conn.execute('''CREATE TABLE IF NOT EXISTS Users 
-                        (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                         username TEXT UNIQUE, 
-                         password TEXT)''')
+        cur = conn.cursor()
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS Users (
+                id SERIAL PRIMARY KEY, 
+                username VARCHAR(50) UNIQUE NOT NULL, 
+                password VARCHAR(255) NOT NULL
+            )
+        ''')
         conn.commit()
+        cur.close()
         conn.close()
+        print("Đã kiểm tra/khởi tạo Database thành công!")
+    except Exception as e:
+        print(f"Lỗi khởi tạo DB: {e}")
 
-# Chỉ khởi tạo nếu file DB chưa tồn tại hoặc chạy lần đầu
-if not os.path.exists(DB_PATH):
-    init_db()
+# Gọi hàm khởi tạo
+init_db()
+
+# ---------------------------------------------------------------------------
+# CÁC ROUTE XỬ LÝ
+# ---------------------------------------------------------------------------
 
 @app.route('/')
 def home():
@@ -40,11 +60,18 @@ def login():
         password = request.form.get('password')
         
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM Users WHERE username = ? AND password = ?', 
-                            (username, password)).fetchone()
+        # Dùng RealDictCursor để trả về dữ liệu dạng Dictionary (giống sqlite3.Row)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # BƯỚC 1: Chỉ tìm user theo username
+        cur.execute('SELECT * FROM Users WHERE username = %s', (username,))
+        user = cur.fetchone()
+        
+        cur.close()
         conn.close()
         
-        if user:
+        # BƯỚC 2: Kiểm tra mật khẩu bằng hàm check_password_hash
+        if user and check_password_hash(user['password'], password):
             session['user'] = user['username']
             return redirect(url_for('home'))
         
@@ -61,19 +88,30 @@ def register():
             flash("Vui lòng nhập đầy đủ thông tin!", "warning")
             return redirect(url_for('register'))
 
+        # BƯỚC 3: Băm mật khẩu (Hashing) trước khi lưu
+        hashed_pw = generate_password_hash(password)
+
         conn = get_db_connection()
+        cur = conn.cursor()
         try:
-            conn.execute('INSERT INTO Users (username, password) VALUES (?, ?)', 
-                         (username, password))
+            # Lưu mật khẩu đã mã hóa (hashed_pw) thay vì mật khẩu gốc
+            cur.execute('INSERT INTO Users (username, password) VALUES (%s, %s)', 
+                         (username, hashed_pw))
             conn.commit()
             flash("Đăng ký thành công! Mời bạn đăng nhập.", "success")
             return redirect(url_for('login'))
-        except sqlite3.IntegrityError:
+        
+        # Bắt lỗi trùng username của PostgreSQL
+        except IntegrityError:
+            conn.rollback() # Cần rollback nếu có lỗi để tránh kẹt database
             flash("Tên đăng nhập đã tồn tại!", "warning")
         except Exception as e:
+            conn.rollback()
             flash(f"Lỗi hệ thống: {str(e)}", "danger")
         finally:
+            cur.close()
             conn.close()
+            
     return render_template('register.html')
 
 @app.route('/logout')
@@ -82,5 +120,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    # Chạy local
     app.run(debug=True)
