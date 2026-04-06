@@ -120,27 +120,22 @@ def register():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    # Chỉ cho phép người dùng đã đăng nhập sử dụng Chatbot
     if 'user' not in session:
-        return jsonify({"answer": "Vui lòng đăng nhập để trò chuyện với trợ lý!"}), 401
+        return jsonify({"answer": "Vui lòng đăng nhập!"}), 401
 
     data = request.json
     user_message = data.get('message', '')
 
-    if not user_message:
-        return jsonify({"answer": "Bạn chưa nhập câu hỏi mà!"}), 400
-
     try:
-        # Prompt định hướng cho AI
-        full_prompt = f"Bạn là trợ lý ảo thân thiện của trường KMA. Hãy trả lời câu hỏi sau một cách lịch sự và ngắn gọn bằng tiếng Việt: {user_message}"
-        
-        # Gọi Gemini API
+        # Đoạn code gọi Gemini (phải lùi vào 2 lần phím Tab hoặc 8 dấu cách)
+        full_prompt = f"Bạn là trợ lý KMA. Trả lời: {user_message}"
         response = model.generate_content(full_prompt)
-        
         return jsonify({"answer": response.text})
+        
     except Exception as e:
+        # Hai dòng dưới đây PHẢI thẳng hàng dọc với nhau
         print(f"Lỗi Gemini: {e}")
-       return jsonify({"answer": f"Lỗi hệ thống: {str(e)}"}), 500
+        return jsonify({"answer": f"Lỗi hệ thống: {str(e)}"}), 500
 
 @app.route('/logout')
 def logout():
