@@ -1081,7 +1081,7 @@ input#vertices {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    margin-right: 15px;
+    margin-right: 15px;head
     flex-shrink: 0;
 }
 
@@ -1398,6 +1398,67 @@ input#vertices {
     }
   };
 </script>
+
+
+    <!-- DÁN ĐOẠN CSS MỚI VÀO ĐÂY, NGAY TRƯỚC THẺ </head> -->
+<style>
+/* =========================================
+   HIỆU ỨNG VIỀN GRADIENT (GRADIENT BORDER)
+   ========================================= */
+
+/* 1. HIỆU ỨNG VIỀN GRADIENT TĨNH (SANG TRỌNG) */
+.gradient-border {
+    position: relative;
+    border: none !important; 
+}
+
+.gradient-border::after {
+    content: "";
+    position: absolute;
+    inset: 0; 
+    border-radius: inherit; 
+    padding: 2px; 
+    
+    background: linear-gradient(135deg, #e11d48, #0ea5e9, #881337); 
+    
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    
+    pointer-events: none; 
+    z-index: 1; 
+}
+
+/* 2. HIỆU ỨNG VIỀN GRADIENT CHUYỂN ĐỘNG (CỰC CUỐN HÚT) */
+.gradient-border-animated {
+    position: relative;
+    border: none !important;
+}
+
+.gradient-border-animated::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2.5px; 
+    
+    background: linear-gradient(90deg, #e11d48, #3b82f6, #10b981, #e11d48);
+    background-size: 300% 300%;
+    
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    
+    pointer-events: none;
+    animation: borderMove 4s linear infinite; 
+}
+
+@keyframes borderMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+</style>
 
 
 <!-- Tải thư viện MathJax chính -->
@@ -1950,11 +2011,30 @@ input#vertices {
         position: relative;
     }
 
-    #game-tab .game-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(159, 18, 57, 0.15);
-        border-color: #fecdd3;
-    }
+    /* Nếu bạn muốn khi di chuột vào Thẻ Game mới hiện viền Gradient */
+.game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(159, 18, 57, 0.15);
+}
+.game-card:hover::after {
+    /* Copy toàn bộ ruột của .gradient-border-animated::after ở trên dán vào đây */
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2.5px; /* Viền động nên để dày hơn một chút */
+    
+    /* Dải màu liên tục để tạo hiệu ứng chạy vòng tròn */
+    background: linear-gradient(90deg, #e11d48, #3b82f6, #10b981, #e11d48);
+    background-size: 300% 300%;
+    
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    
+    pointer-events: none;
+    animation: borderMove 4s linear infinite; /* Gọi hiệu ứng chuyển động */
+}
 
     #game-tab .game-thumb {
         width: 100%;
@@ -2130,7 +2210,11 @@ input#vertices {
     <!-- CỘT TRÁI: ĐIỀU KHIỂN & CẤU HÌNH -->
     <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
         <!-- PANEL CẤU HÌNH -->
-        <div class="panel shadow" style="background: white; border-radius: 16px; padding: 24px; border: 1px solid #fecdd3; box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.05);">
+       <!-- Dùng viền tĩnh cho khung Cấu hình -->
+    <div class="panel shadow gradient-border" style="...">
+
+<!-- Dùng viền động cho khung Phân tích đồ thị -->
+    <div class="panel shadow gradient-border-animated" style="...">
             <h2 style="font-size: 1rem; color: #881337; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; margin-top:0; font-weight: 800; letter-spacing: -0.02em;">
                 <span style="background: #ffe4e6; padding: 6px; border-radius: 8px; border: 1px solid #fecdd3;">⚙️</span> Cấu hình Đồ thị
             </h2>
@@ -2166,7 +2250,7 @@ input#vertices {
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <button onclick="graphLab.startStepByStep()" class="action-btn" style="background: #fff; border: 1.5px solid #fb7185; color: #e11d48; font-weight: 700;">⏩ Từng bước</button>
-                <button onclick="graphLab.runMain()" class="action-btn" style="background: #9f1239; color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(159, 18, 57, 0.25);">🚀 Chạy ngay</button>
+               <button onclick="graphLab.runMain()" class="action-btn gradient-border-animated" style="position: relative; background: #9f1239; color: white; ...">🚀 Chạy ngay</button>
             </div>
         </div>
 
