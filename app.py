@@ -1,6 +1,6 @@
 import os
 import psycopg2
-import google.generativeai as genai  # Thư viện Gemini
+from google import genai  # <-- THƯ VIỆN MỚI NHẤT CỦA GOOGLE
 from psycopg2 import IntegrityError
 from psycopg2.extras import RealDictCursor
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
@@ -11,17 +11,14 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'kma_secret_key_sieu_bao_mat')
 
 # ---------------------------------------------------------------------------
-# CẤU HÌNH GEMINI AI
-# ---------------------------------------------------------------------------
-# ---------------------------------------------------------------------------
-# CẤU HÌNH GEMINI AI
+# CẤU HÌNH GEMINI AI (CHUẨN MỚI NHẤT)
 # ---------------------------------------------------------------------------
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 if GEMINI_KEY:
-    genai.configure(api_key=GEMINI_KEY)
-    # Cấu hình model (dùng bản 1.5-flash cho nhanh và miễn phí)
-    model = genai.GenerativeModel("gemini-pro")
+    # Khởi tạo Client theo chuẩn mới của thư viện google-genai
+    gemini_client = genai.Client(api_key=GEMINI_KEY)
 else:
+    gemini_client = None
     print("CẢNH BÁO: Chưa cấu hình GEMINI_API_KEY trong biến môi trường!")
 
 # ---------------------------------------------------------------------------
@@ -53,13 +50,11 @@ def init_db():
     except Exception as e:
         print(f"Lỗi khởi tạo DB: {e}")
 
-# Khởi tạo bảng khi app chạy
 init_db()
 
 # ---------------------------------------------------------------------------
 # CÁC ROUTE XỬ LÝ GIAO DIỆN
 # ---------------------------------------------------------------------------
-
 @app.route('/')
 def home():
     if 'user' not in session:
@@ -120,23 +115,28 @@ def register():
 # ---------------------------------------------------------------------------
 # ROUTE XỬ LÝ CHATBOT (GEMINI AI)
 # ---------------------------------------------------------------------------
-
 @app.route('/chat', methods=['POST'])
 def chat():
     if 'user' not in session:
         return jsonify({"answer": "Vui lòng đăng nhập!"}), 401
 
+    if not gemini_client:
+        return jsonify({"answer": "Lỗi: Hệ thống chưa được cấp API Key!"}), 500
+
     data = request.json
     user_message = data.get('message', '')
 
     try:
-        # Đoạn code gọi Gemini (phải lùi vào 2 lần phím Tab hoặc 8 dấu cách)
-        full_prompt = f"Bạn là trợ lý KMA. Trả lời: {user_message}"
-        response = model.generate_content(full_prompt)
+        full_prompt = f"Bạn là trợ lý ảo thân thiện của trường KMA. Trả lời: {user_message}"
+        
+        # Cú pháp gọi AI hoàn toàn mới
+        response = gemini_client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=full_prompt
+        )
         return jsonify({"answer": response.text})
         
     except Exception as e:
-        # Hai dòng dưới đây PHẢI thẳng hàng dọc với nhau
         print(f"Lỗi Gemini: {e}")
         return jsonify({"answer": f"Lỗi hệ thống: {str(e)}"}), 500
 
