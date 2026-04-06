@@ -1466,8 +1466,12 @@ input#vertices {
     </div>
 </div>
 
+
 <script>
-    // 1. Hàm ẩn hiện khung chat
+    // 0. Khởi tạo mảng lưu trữ lịch sử trò chuyện (TRÍ NHỚ CHO AI)
+    let chatHistory = [];
+
+    // 1. Hàm ẩn hiện khung chat (Giữ nguyên)
     function toggleChat() {
         const chatBox = document.getElementById('chat-box');
         chatBox.classList.toggle('chat-hidden');
@@ -1477,7 +1481,7 @@ input#vertices {
         }
     }
 
-    // 2. Hàm gửi tin nhắn
+    // 2. Hàm gửi tin nhắn (Đã nâng cấp)
     async function sendMessage() {
         const input = document.getElementById('user-msg');
         const message = input.value.trim();
@@ -1496,15 +1500,29 @@ input#vertices {
             const response = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ 
+                    message: message,
+                    history: chatHistory  // GỬI KÈM TRÍ NHỚ LÊN SERVER
+                })
             });
 
             const data = await response.json();
             
-            // Xóa dòng "Đang suy nghĩ..." và thay bằng câu trả lời thật
             const loadingMsg = document.getElementById(tempId);
             if (data.answer) {
+                // Thay thế dòng "Đang suy nghĩ..." bằng câu trả lời thật
                 loadingMsg.innerText = data.answer;
+
+                // CẬP NHẬT TRÍ NHỚ (Chỉ lưu khi AI trả lời thành công)
+                chatHistory.push({ "role": "user", "content": message });
+                chatHistory.push({ "role": "assistant", "content": data.answer });
+
+                // Giới hạn trí nhớ: Giữ lại 8 tin nhắn gần nhất (4 vòng hỏi - đáp)
+                // Điều này giúp tránh bị quá tải dữ liệu gửi lên server
+                if (chatHistory.length > 8) {
+                    chatHistory = chatHistory.slice(chatHistory.length - 8);
+                }
+
             } else {
                 loadingMsg.innerText = "Xin lỗi, mình gặp lỗi kết nối.";
             }
@@ -1514,7 +1532,7 @@ input#vertices {
         }
     }
 
-    // 3. Hàm tạo phần tử tin nhắn mới
+    // 3. Hàm tạo phần tử tin nhắn mới (Giữ nguyên)
     function appendMessage(text, className, id = null) {
         const content = document.getElementById('chat-content');
         const msgDiv = document.createElement('div');
@@ -1528,6 +1546,7 @@ input#vertices {
         return id;
     }
 </script>
+
     
 
 <header>
