@@ -438,11 +438,19 @@ input#vertices {
             object-fit: cover;
         }
         
-        .zalo-btn { 
-            background: #508ce6 !important;; /* Xanh da trời chuẩn Zalo */
+       .zalo-btn { 
+            background: #508ce6 !important; /* Xanh da trời chuẩn Zalo */
             padding: 0;
             overflow: hidden; 
         }
+
+        /* THÊM ĐOẠN NÀY VÀO DƯỚI CLASS .zalo-btn */
+         .zalo-btn img {
+            width: 42px !important;  /* Tăng từ 28px lên 42px */
+            height: 42px !important;
+            object-fit: cover;
+            border-radius: 50%; /* Nếu ảnh Zalo của bạn là hình vuông, dòng này sẽ giúp bo tròn nó theo nút */
+                }
         
         .phone-btn { 
             background: #00B14F; /* Xanh lá cây nổi bật (chuẩn các nút Call) */
@@ -2330,6 +2338,15 @@ const graphLab = {
         document.getElementById('edge-count').innerText = this.edges.length;
         document.getElementById('graph-density').innerText = vCount > 1 ? (this.edges.length / (vCount*(vCount-1)/2)).toFixed(2) : 0;
         this.renderMatrix(matrix);
+
+        // --- THÊM ĐOẠN NÀY ĐỂ CĂN GIỮA SAU KHI TẠO ĐỒ THỊ MỚI ---
+        setTimeout(() => {
+            if (this.network) {
+                this.network.fit({ 
+                    animation: { duration: 500, easingFunction: "easeInOutQuad" } 
+                });
+            }
+        }, 300); // Đợi 300ms để hiệu ứng vật lý của đồ thị dàn trải xong
     },
 
     renderMatrix(m) {
@@ -2701,7 +2718,7 @@ window.addEventListener('DOMContentLoaded', () => graphLab.init());
         }
     }
 
-    function showTab(t, b) { 
+        function showTab(t, b) { 
         stopGame(); stopYoutube(); closePdfViewer();
         if (t === 'youtube-tab') audio.volume = 0.2; else audio.volume = 1.0;
         document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none'); 
@@ -2709,9 +2726,20 @@ window.addEventListener('DOMContentLoaded', () => graphLab.init());
         const target = document.getElementById(t);
         target.style.display = (t === 'calc-tab' ? 'grid' : 'block'); 
         b.classList.add('active'); 
-        if (t === 'theory-tab' && window.MathJax) {
-        MathJax.typeset();
         
+        if (t === 'theory-tab' && window.MathJax) {
+            MathJax.typeset();
+        }
+
+    // --- THÊM ĐOẠN NÀY ĐỂ XỬ LÝ ĐỒ THỊ ---
+    // Tự động căn giữa đồ thị khi mở tab Tính toán
+    if (t === 'calc-tab' && typeof graphLab !== 'undefined' && graphLab.network) {
+        setTimeout(() => {
+            graphLab.network.redraw(); // Vá lỗi kích thước canvas khi tab bị ẩn
+            graphLab.network.fit({ 
+                animation: { duration: 500, easingFunction: "easeInOutQuad" } 
+            });
+        }, 150);
     }
 }
 
