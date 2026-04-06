@@ -7,6 +7,50 @@
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    /* Chatbot Wrapper */
+    #chatbot-wrapper { position: fixed; bottom: 30px; right: 30px; z-index: 9999; font-family: 'Inter', sans-serif; }
+    
+    /* Nút bấm mở chat */
+    #chat-circle { 
+        width: 60px; height: 60px; background: #0054a5; border-radius: 50%; 
+        display: flex; justify-content: center; align-items: center; 
+        cursor: pointer; box-shadow: 0 10px 25px rgba(0,84,165,0.3); transition: 0.3s;
+    }
+    #chat-circle:hover { transform: scale(1.1); }
+    #chat-circle span { color: white; font-size: 28px; }
+
+    /* Khung chat chính */
+    #chat-box { 
+        width: 350px; height: 500px; background: white; border-radius: 20px;
+        display: flex; flex-direction: column; overflow: hidden;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.15); transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        position: absolute; bottom: 80px; right: 0; transform-origin: bottom right;
+    }
+    .chat-hidden { transform: scale(0); opacity: 0; pointer-events: none; }
+    
+    /* Đầu khung chat */
+    .chat-header { background: #0054a5; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+    .chat-header button { background: none; border: none; color: white; cursor: pointer; font-size: 24px; line-height: 1; }
+    
+    /* Nội dung tin nhắn */
+    #chat-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f9fafb; scroll-behavior: smooth; }
+    .msg { padding: 10px 14px; border-radius: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word; }
+    .bot-msg { background: #ffffff; align-self: flex-start; color: #1f2937; border: 1px solid #e5e7eb; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+    .user-msg { background: #0054a5; color: white; align-self: flex-end; box-shadow: 0 4px 10px rgba(0,84,165,0.2); }
+
+    /* Khu vực nhập liệu */
+    .chat-input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #f1f1f1; background: white; }
+    .chat-input-area input { flex: 1; border: 1px solid #e5e7eb; padding: 12px; border-radius: 12px; outline: none; transition: 0.2s; font-size: 0.9rem; }
+    .chat-input-area input:focus { border-color: #0054a5; background: #fcfcfc; }
+    .chat-input-area button { background: #0054a5; border: none; color: white; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+    .chat-input-area button:hover { background: #004385; }
+</style>
+
     
     <style>
         :root { 
@@ -1396,6 +1440,95 @@ input#vertices {
         <i class="fas fa-sign-out-alt"></i>
     </a>
 </div>
+
+
+
+
+    <!-- Chatbot UI -->
+<div id="chatbot-wrapper">
+    <div id="chat-box" class="chat-hidden">
+        <div class="chat-header">
+            <span>🤖 Trợ lý ảo KMA</span>
+            <button onclick="toggleChat()">&times;</button>
+        </div>
+        <div id="chat-content">
+            <div class="msg bot-msg">Chào <strong>{{ user }}</strong>! Mình là AI của KMA. Bạn cần mình giúp gì hôm nay?</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="user-msg" placeholder="Hỏi gì đó..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button onclick="sendMessage()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+    <div id="chat-circle" onclick="toggleChat()">
+        <span>💬</span>
+    </div>
+</div>
+
+<script>
+    // 1. Hàm ẩn hiện khung chat
+    function toggleChat() {
+        const chatBox = document.getElementById('chat-box');
+        chatBox.classList.toggle('chat-hidden');
+        // Tự động focus vào ô nhập khi mở chat
+        if (!chatBox.classList.contains('chat-hidden')) {
+            setTimeout(() => document.getElementById('user-msg').focus(), 300);
+        }
+    }
+
+    // 2. Hàm gửi tin nhắn
+    async function sendMessage() {
+        const input = document.getElementById('user-msg');
+        const message = input.value.trim();
+        if (!message) return;
+
+        // Hiển thị tin nhắn của người dùng lên màn hình
+        appendMessage(message, 'user-msg');
+        input.value = '';
+
+        // Hiển thị trạng thái chờ từ Bot
+        const tempId = 'loading-' + Date.now();
+        appendMessage('Đang suy nghĩ...', 'bot-msg', tempId);
+
+        try {
+            // Gọi đến Route /chat trong app.py
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await response.json();
+            
+            // Xóa dòng "Đang suy nghĩ..." và thay bằng câu trả lời thật
+            const loadingMsg = document.getElementById(tempId);
+            if (data.answer) {
+                loadingMsg.innerText = data.answer;
+            } else {
+                loadingMsg.innerText = "Xin lỗi, mình gặp lỗi kết nối.";
+            }
+        } catch (error) {
+            console.error("Lỗi:", error);
+            document.getElementById(tempId).innerText = "Hệ thống AI đang bận. Bạn thử lại sau nhé!";
+        }
+    }
+
+    // 3. Hàm tạo phần tử tin nhắn mới
+    function appendMessage(text, className, id = null) {
+        const content = document.getElementById('chat-content');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'msg ' + className;
+        if (id) msgDiv.id = id;
+        msgDiv.innerText = text;
+        content.appendChild(msgDiv);
+        
+        // Luôn cuộn xuống tin nhắn mới nhất
+        content.scrollTop = content.scrollHeight;
+        return id;
+    }
+</script>
+    
 
 <header>
     <div class="logo-container">
