@@ -6,6 +6,7 @@
     <title>ACADEMY OF CRYPTOGRAPHY TECHNIQUES - Graph Coloring Solver Website & Learning Hub</title>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
         :root { 
@@ -27,17 +28,17 @@
         }
         
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-image: url('https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/01/anh-mau-trang-74.jpg'); 
-            background-attachment: fixed;
-            background-size: cover;
-            background-position: center;
-            color: var(--text); 
-            margin: 0; 
-            padding: 0; 
-            transition: 0.3s; 
-            padding-bottom: 80px; 
-        }
+    font-family: 'Roboto', Tahoma, Geneva, Verdana, sans-serif !important; 
+    background-image: url('https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/01/anh-mau-trang-74.jpg'); 
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    color: var(--text); 
+    margin: 0; 
+    padding: 0; 
+    transition: 0.3s; 
+    padding-bottom: 80px; 
+}
 
 
 /* --- CONTROLS TOP --- ################################################################################################################*/
@@ -191,8 +192,9 @@
             color: #ffffff; 
             text-transform: uppercase; 
             font-weight: 800; 
-            letter-spacing: 1.5px;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            font-family: 'Montserrat', sans-serif !important;
+            letter-spacing: -0.5px;
         }
         .header-title p { 
             margin: 2px 0 0 0; 
@@ -205,6 +207,18 @@
             color: #ffd700; 
             font-style: italic;
         }
+        h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* Riêng phần mã code và ma trận cần dùng font Monospace để căn lề chuẩn xác */
+.matrix-table-wrapper table, 
+textarea#edges, 
+input#vertices {
+    font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+}
 
         /* --- CSS STICKY TABS --- */
         .tab-container { 
@@ -373,9 +387,15 @@
         .fb-btn { 
             background: #fff1f2; /* Xanh dương chuẩn Facebook */
         }
+        .fb-btn img {
+            width: 42px !important;  /* Tăng từ 28px lên 42px (gần lấp đầy nút 50px) */
+            height: 42px !important;
+            border-radius: 50%; /* Tự động bo tròn nếu ảnh gốc là hình vuông */
+            object-fit: cover;
+        }
         
         .zalo-btn { 
-            background: #ffffff; /* Xanh da trời chuẩn Zalo */
+            background: #508ce6 !important;; /* Xanh da trời chuẩn Zalo */
             padding: 0;
             overflow: hidden; 
         }
@@ -533,6 +553,9 @@
     padding: 2px 8px;
     border-radius: 8px;
 }
+
+
+
 
 .stat-number-v5 {
     font-size: 1.8rem; /* Cỡ số gọn gàng chuyên nghiệp */
@@ -793,7 +816,265 @@
             transform: translateY(-5px) scale(1.15);
             filter: brightness(1.1);
         }
+        /* =========================================
+   TỐI ƯU FONT VÀ MÀU SẮC CHO TAB TÍNH TOÁN
+   ========================================= */
 
+/* 1. Đổi màu nền Tab và Font chữ chung */
+#calc-tab {
+    font-family: 'Roboto', sans-serif !important;
+    background: #f8fafc !important; /* Chuyển nền hồng sang xám nhạt (Slate) rất sang */
+}
+
+/* 2. Tiêu đề các Panel (Cấu hình, Phân tích, Dashboard...) */
+#calc-tab h2, 
+#calc-tab h3 {
+    font-family: 'Montserrat', sans-serif !important;
+    font-weight: 800 !important;
+    color: #881337 !important; /* Giữ lại Đỏ KMA cho tiêu đề */
+    letter-spacing: -0.5px !important;
+}
+
+/* 3. Màu nền và viền của các Khung (Panels) */
+#calc-tab .panel {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important; /* Viền xám nhạt thay vì viền hồng */
+    box-shadow: 0 10px 30px rgba(159, 18, 57, 0.05) !important;
+}
+
+/* 4. Các Nhãn (Labels) */
+#calc-tab label, 
+#calc-tab .prop-row span {
+    font-family: 'Montserrat', sans-serif !important;
+    color: #475569 !important; /* Xám đậm dễ đọc hơn đỏ */
+    font-weight: 700 !important;
+}
+
+/* 5. Font Code cho Nhập liệu và Kết quả (Input, Textarea, Ma trận) */
+#calc-tab input, 
+#calc-tab textarea, 
+#calc-tab select,
+#graph-props b, 
+#res-time, 
+#res-colors,
+#matrix-table-wrapper table {
+    font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+}
+
+/* Chỉnh lại nền ô Input cho sạch sẽ */
+#calc-tab input, 
+#calc-tab textarea, 
+#calc-tab select {
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+#calc-tab input:focus, 
+#calc-tab textarea:focus {
+    border-color: #9f1239 !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(159, 18, 57, 0.1) !important;
+}
+
+/* 6. Đồng bộ Font cho Nút bấm */
+#calc-tab button {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Làm dịu các nút chức năng phụ (Petersen, K5...) */
+.small-btn {
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+    background: #ffffff !important;
+}
+.small-btn:hover {
+    border-color: #9f1239 !important;
+    color: #9f1239 !important;
+    background: #fff1f2 !important;
+}
+
+/* Viền phân cách trong khu Phân tích đồ thị */
+#calc-tab .prop-row {
+    border-bottom: 1px dashed #e2e8f0 !important;
+}
+
+/* =========================================
+   TỐI ƯU GIAO DIỆN TAB LÝ THUYẾT (THEORY)
+   ========================================= */
+#theory-tab {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    font-family: 'Roboto', sans-serif;
+}
+
+.theory-hero {
+    background: linear-gradient(135deg, #881337 0%, #e11d48 100%);
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(159, 18, 57, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.theory-hero::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: url('https://www.transparenttextures.com/patterns/cubes.png');
+    opacity: 0.1;
+}
+
+.theory-hero h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.2rem;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 2;
+}
+
+.theory-hero p {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: #fecdd3;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.theory-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.theory-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.theory-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(159, 18, 57, 0.08);
+    border-color: #fecdd3;
+}
+
+.theory-card h2 {
+    font-family: 'Montserrat', sans-serif;
+    color: #881337;
+    font-size: 1.3rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px dashed #fecdd3;
+    padding-bottom: 15px;
+}
+
+.theory-card h2 i {
+    color: #e11d48;
+    background: #fff1f2;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.theory-content p {
+    color: #475569;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.theory-highlight {
+    background: #f8fafc;
+    border-left: 4px solid #0ea5e9;
+    padding: 15px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.theory-highlight.red {
+    border-left-color: #e11d48;
+    background: #fff1f2;
+}
+
+.algo-step {
+    display: flex;
+    margin-bottom: 15px;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 12px;
+    align-items: center;
+}
+
+.algo-step-num {
+    background: #881337;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.app-item {
+    text-align: center;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+}
+
+.app-item i {
+    font-size: 2.5rem;
+    color: #0ea5e9;
+    margin-bottom: 15px;
+}
+
+.app-item h4 {
+    font-family: 'Montserrat', sans-serif;
+    color: #0f172a;
+    margin: 0 0 10px 0;
+}
+
+.app-item p {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 990px) {
+    .theory-grid {
+        grid-template-columns: 1fr;
+    }
+    .app-grid {
+        grid-template-columns: 1fr;
+    }
+}
         /* --- Responsive --- */
         @media (max-width: 990px) {
             .social-box { justify-content: flex-start; }
@@ -1432,7 +1713,256 @@
 <!-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc->        
 
 
+<!-- =======================================================
+     TAB GIẢI TRÍ (ĐÃ ĐÓNG GÓI CSS, HTML & JS ĐỘC LẬP)
+     ======================================================= -->
 
+<!-- 1. CSS DÀNH RIÊNG CHO TAB GAME -->
+<style>
+    #game-tab {
+        background: #f8fafc !important;
+        padding: 30px !important;
+        border-radius: 20px;
+        font-family: 'Roboto', sans-serif;
+        border: 1px solid #e2e8f0;
+    }
+
+    #game-tab .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    #game-tab .game-header h2 {
+        font-family: 'Montserrat', sans-serif;
+        color: #0f172a;
+        font-size: 1.8rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    #game-tab .game-header h2 i {
+        color: #e11d48;
+    }
+
+    #game-tab .btn-exit-game {
+        background: #fff1f2;
+        color: #e11d48;
+        border: 1px solid #fecdd3;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-family: 'Montserrat', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    #game-tab .btn-exit-game:hover {
+        background: #e11d48;
+        color: white;
+        box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);
+        transform: translateY(-2px);
+    }
+
+    #game-tab .game-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    #game-tab .game-card {
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+        border: 1px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+
+    #game-tab .game-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(159, 18, 57, 0.15);
+        border-color: #fecdd3;
+    }
+
+    #game-tab .game-thumb {
+        width: 100%;
+        height: 180px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #game-tab .game-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    #game-tab .game-card:hover .game-thumb img {
+        transform: scale(1.1);
+    }
+
+    #game-tab .game-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(159, 18, 57, 0.8), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 20px;
+    }
+
+    #game-tab .game-card:hover .game-overlay {
+        opacity: 1;
+    }
+
+    #game-tab .play-badge {
+        background: white;
+        color: #e11d48;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+
+    #game-tab .game-card:hover .play-badge {
+        transform: translateY(0);
+    }
+
+    #game-tab .game-info {
+        padding: 20px;
+        text-align: center;
+    }
+
+    #game-tab .game-info h3 {
+        font-family: 'Montserrat', sans-serif;
+        color: #0f172a;
+        margin: 0 0 8px 0;
+        font-size: 1.1rem;
+    }
+
+    #game-tab .game-info p {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    #game-tab .game-frame-wrapper {
+        background: #0f172a;
+        border-radius: 20px;
+        padding: 8px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        display: none;
+        position: relative;
+        margin-top: 20px;
+    }
+
+    #game-tab #game-frame {
+        width: 100%;
+        height: 650px;
+        border: none;
+        border-radius: 12px;
+        background: white;
+        display: block;
+    }
+</style>
+
+<!-- 2. GIAO DIỆN HTML TAB GAME -->
+<div id="game-tab" class="content-section panel full-width">
+    
+    <div class="game-header">
+        <h2><i class="fas fa-gamepad"></i> Góc Giải Trí KMA</h2>
+        <button class="btn-exit-game" id="stop-game-btn" onclick="stopGamePro()" style="display: none;">
+            <i class="fas fa-sign-out-alt"></i> Thoát Game
+        </button>
+    </div>
+
+    <div id="game-selection" class="game-grid">
+        <!-- GAME 1 -->
+        <div class="game-card" onclick="loadGamePro('static/docs/game.html')">
+            <div class="game-thumb">
+                <img src="static/docs/icontenlua.jpg" alt="Astronaut">
+                <div class="game-overlay">
+                    <span class="play-badge"><i class="fas fa-play"></i> Chơi Ngay</span>
+                </div>
+            </div>
+            <div class="game-info">
+                <h3>Phi Hành Gia KMA</h3>
+                <p>Khám phá vũ trụ mật mã vô tận</p>
+            </div>
+        </div>
+
+        <!-- GAME 2 -->
+        <div class="game-card" onclick="loadGamePro('static/docs/bird.html')">
+            <div class="game-thumb">
+                <img src="static/docs/iconga.jpg" alt="Bird">
+                <div class="game-overlay">
+                    <span class="play-badge"><i class="fas fa-play"></i> Chơi Ngay</span>
+                </div>
+            </div>
+            <div class="game-info">
+                <h3>Gà Con Đi Học</h3>
+                <p>Vượt qua chướng ngại Toán Rời Rạc</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-frame-wrapper" class="game-frame-wrapper">
+        <iframe id="game-frame"></iframe>
+    </div>
+
+</div>
+
+<!-- 3. JAVASCRIPT XỬ LÝ (Tách riêng tên hàm để không đụng code cũ) -->
+<script>
+    function loadGamePro(path) { 
+        document.getElementById('game-selection').style.display = 'none'; 
+        document.getElementById('stop-game-btn').style.display = 'flex'; 
+        
+        const wrapper = document.getElementById('game-frame-wrapper'); 
+        const frame = document.getElementById('game-frame');
+        wrapper.style.display = 'block'; 
+        frame.src = path; 
+        
+        wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function stopGamePro() { 
+        const wrapper = document.getElementById('game-frame-wrapper');
+        const frame = document.getElementById('game-frame'); 
+        
+        frame.src = "about:blank"; 
+        wrapper.style.display = 'none'; 
+        
+        document.getElementById('game-selection').style.display = 'grid'; 
+        document.getElementById('stop-game-btn').style.display = 'none'; 
+    }
+</script>
+<!-- =======================================================
+     KẾT THÚC TAB GIẢI TRÍ
+     ======================================================= -->
 
 <!-- TAB TÍNH TOÁN - PHIÊN BẢN TỐI ƯU HÀI HÒA (ROSE & CRIMSON) -->
 <div id="calc-tab" class="content-section active" style="display: grid; grid-template-columns: 380px 1fr; gap: 20px; background: #fff1f2; padding: 25px; font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 800px;">
@@ -1685,106 +2215,125 @@ const graphLab = {
 window.addEventListener('DOMContentLoaded', () => graphLab.init());
 </script>
 
+
 <div id="theory-tab" class="content-section panel full-width">
-    <div class="theory-container" style="max-width: 1200px; margin: 0 auto; line-height: 1.8; color: var(--text);">
+    
+    <!-- Banner Tiêu đề -->
+    <div class="theory-hero">
+        <h1>Toán Rời Rạc: Tô Màu Đồ Thị</h1>
+        <p>Học viện Kỹ thuật Mật mã — Khoa Công nghệ Thông tin</p>
+    </div>
+
+    <!-- Layout 2 cột cho Lý thuyết & Thuật toán -->
+    <div class="theory-grid">
         
-        <!-- Header chính -->
-        <div style="text-align: center; margin-bottom: 50px; border-bottom: 3px double var(--primary); padding-bottom: 20px;">
-            <h1 style="color: var(--kma-red); margin-bottom: 10px; font-size: 2.2rem; letter-spacing: 2px;">TOÁN RỜI RẠC: LÝ THUYẾT TÔ MÀU ĐỒ THỊ</h1>
-            <p style="font-weight: 600; color: var(--primary); opacity: 0.8;">HỌC VIỆN KỸ THUẬT MẬT MÃ - KHOA CÔNG NGHỆ THÔNG TIN</p>
+        <!-- Cột Trái: Khái niệm & Định lý -->
+        <div class="theory-col">
+            <div class="theory-card" style="margin-bottom: 30px;">
+                <h2><i class="fas fa-book-open"></i> 1. Khái niệm cơ bản</h2>
+                <div class="theory-content">
+                    <p><b>Tô màu đỉnh (Vertex Coloring):</b> Cho đồ thị $G = (V, E)$, một phép tô màu đỉnh là việc gán cho mỗi đỉnh $v \in V$ một màu sao cho không có hai đỉnh kề nhau nào (được nối bởi một cạnh) có cùng màu.</p>
+                    
+                    <div class="theory-highlight red">
+                        <b>Sắc số $\chi(G)$:</b> Là số nguyên dương nhỏ nhất $k$ sao cho đồ thị $G$ có thể được tô bằng $k$ màu hợp lệ. Khi đó, đồ thị $G$ được gọi là đồ thị <b>$k$-sắc</b>.
+                    </div>
+
+                    <p><b>Một số đồ thị đặc biệt:</b></p>
+                    <ul style="color: #475569; line-height: 1.8;">
+                        <li>Đồ thị đầy đủ $K_n$: Có $\chi(K_n) = n$.</li>
+                        <li>Đồ thị rỗng (Không có cạnh): Có $\chi(G) = 1$.</li>
+                        <li>Đồ thị lưỡng phân (Bipartite): Có $\chi(G) = 2$ (nếu có ít nhất 1 cạnh).</li>
+                        <li>Đồ thị vòng $C_n$: Có $\chi(C_n) = 2$ nếu $n$ chẵn, và $3$ nếu $n$ lẻ.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="theory-card">
+                <h2><i class="fas fa-graduation-cap"></i> 2. Các định lý quan trọng</h2>
+                <div class="theory-content">
+                    <div class="theory-highlight">
+                        <b>Định lý Brook:</b> Với mọi đồ thị liên thông $G$ (không phải là đồ thị đầy đủ $K_n$ hay đồ thị vòng lẻ $C_{2k+1}$), ta luôn có sắc số nhỏ hơn hoặc bằng bậc lớn nhất của đồ thị: <br>
+                        <div style="text-align: center; font-size: 1.2rem; margin-top: 10px;">$\chi(G) \le \Delta(G)$</div>
+                    </div>
+                    
+                    <div class="theory-highlight">
+                        <b>Định lý 4 màu (Bản đồ):</b> Mọi đồ thị phẳng (có thể vẽ trên mặt phẳng mà không có hai cạnh nào cắt nhau) đều có thể tô bằng tối đa 4 màu: $\chi(G) \le 4$.
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Phần 1: Định nghĩa -->
-        <section class="theory-part" style="margin-bottom: 40px;">
-            <h2 style="display: flex; align-items: center; gap: 10px; color: var(--primary);">
-                <i class="fas fa-book-open"></i> 1. Định nghĩa và Khái niệm cơ bản
-            </h2>
-            <div style="background: var(--card); padding: 25px; border-radius: 15px; border-left: 8px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-                <p><b>Tô màu đỉnh:</b> Cho đồ thị $G = (V, E)$, một phép tô màu đỉnh là việc gán cho mỗi đỉnh $v \in V$ một màu sao cho không có hai đỉnh kề nhau nào có cùng màu.</p>
-                <p><b>Sắc số $\chi(G)$:</b> Là số nguyên dương $k$ nhỏ nhất sao cho đồ thị $G$ có thể được tô bằng $k$ màu. Khi đó $G$ được gọi là đồ thị $k$-sắc.</p>
-                
-                <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="background: rgba(0,84,165,0.05); padding: 10px; border-radius: 8px;">
-                        <i class="fas fa-check-circle" style="color: #27ae60;"></i> <b>Đồ thị đầy đủ $K_n$:</b> $\chi(K_n) = n$
+        <!-- Cột Phải: Các Thuật toán -->
+        <div class="theory-col">
+            <div class="theory-card" style="margin-bottom: 30px;">
+                <h2><i class="fas fa-project-diagram"></i> 3. Thuật toán Welsh-Powell</h2>
+                <div class="theory-content">
+                    <p>Đây là một thuật toán Heuristic (Tham lam tối ưu) giúp tìm ra cách tô màu với số lượng màu gần với sắc số nhất một cách nhanh chóng.</p>
+                    
+                    <div class="algo-step">
+                        <div class="algo-step-num">1</div>
+                        <div>Tính bậc của tất cả các đỉnh trong đồ thị và sắp xếp chúng theo thứ tự bậc giảm dần.</div>
                     </div>
-                    <div style="background: rgba(0,84,165,0.05); padding: 10px; border-radius: 8px;">
-                        <i class="fas fa-check-circle" style="color: #27ae60;"></i> <b>Đồ thị lưỡng phân:</b> $\chi(G) = 2$
+                    <div class="algo-step">
+                        <div class="algo-step-num">2</div>
+                        <div>Chọn màu đầu tiên. Tô màu này cho đỉnh đầu tiên trong danh sách đã sắp xếp.</div>
+                    </div>
+                    <div class="algo-step">
+                        <div class="algo-step-num">3</div>
+                        <div>Duyệt tiếp danh sách, tô cùng màu đó cho đỉnh tiếp theo nếu nó <b>không kề</b> với bất kỳ đỉnh nào đã được tô màu này.</div>
+                    </div>
+                    <div class="algo-step">
+                        <div class="algo-step-num">4</div>
+                        <div>Chọn màu thứ hai và lặp lại bước 3 cho các đỉnh chưa được tô màu, cho đến khi mọi đỉnh đều có màu.</div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        http://googleusercontent.com/image_content/171
-
-
-
-        <!-- Phần 2: Các định lý -->
-        <section class="theory-part" style="margin-bottom: 40px;">
-            <h2 style="color: var(--primary);"><i class="fas fa-graduation-cap"></i> 2. Các định lý quan trọng</h2>
-            <table style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
-                <tr>
-                    <td style="background: var(--kma-red); color: white; padding: 15px; border-radius: 10px 0 0 10px; width: 180px; font-weight: bold;">Định lý Brook</td>
-                    <td style="background: var(--card); padding: 15px; border-radius: 0 10px 10px 0; border: 1px solid #ddd;">
-                        Với mọi đồ thị liên thông $G$ (không phải $K_n$ hoặc vòng lẻ), ta luôn có: $\chi(G) \leq \Delta(G)$.
-                    </td>
-                </tr>
-                <tr>
-                    <td style="background: #2c3e50; color: white; padding: 15px; border-radius: 10px 0 0 10px; font-weight: bold;">Bài toán 4 màu</td>
-                    <td style="background: var(--card); padding: 15px; border-radius: 0 10px 10px 0; border: 1px solid #ddd;">
-                        Mọi đồ thị phẳng (có thể vẽ trên mặt phẳng mà không có các cạnh cắt nhau) đều có $\chi(G) \leq 4$.
-                    </td>
-                </tr>
-            </table>
-        </section>
-
-        <!-- Phần 3: Thuật toán Quay lui -->
-        <section class="theory-part" style="margin-bottom: 40px;">
-            <h2 style="color: var(--primary);"><i class="fas fa-code"></i> 3. Phân tích thuật toán Quay lui (Backtracking)</h2>
-            <p>Đây là giải thuật tìm lời giải <b>Chính xác (Exact)</b>. Quy trình xử lý như sau:</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span style="background: var(--primary); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">1</span>
-                    <span>Thử tô màu từ màu số 1 đến số $m$.</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span style="background: var(--primary); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">2</span>
-                    <span>Tại mỗi đỉnh $v$, kiểm tra tính an toàn (không trùng màu với các đỉnh kề đã tô).</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span style="background: var(--kma-red); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">3</span>
-                    <span>Nếu ngõ cụt, thực hiện <b>Quay lui</b> để đổi màu đỉnh trước đó cho đến khi hết đỉnh.</span>
+            <div class="theory-card">
+                <h2><i class="fas fa-code"></i> 4. Giải thuật Quay lui (Backtracking)</h2>
+                <div class="theory-content">
+                    <p>Quay lui là thuật toán duyệt không gian trạng thái để tìm ra <b>kết quả chính xác tuyệt đối (Exact)</b>. Máy tính sẽ thử tô lần lượt bằng $m$ màu ($m$ chạy từ $1$ đến $n$).</p>
+                    <ul style="color: #475569; line-height: 1.8;">
+                        <li>Tại mỗi đỉnh, kiểm tra tính hợp lệ (không trùng màu với đỉnh kề).</li>
+                        <li>Nếu hợp lệ, đi tiếp sang đỉnh tiếp theo.</li>
+                        <li>Nếu gặp ngõ cụt (không có màu nào trong $m$ màu hợp lệ), hệ thống sẽ <b>Quay lui (Backtrack)</b> về đỉnh trước đó để thử màu khác.</li>
+                    </ul>
+                    <p><i>Lưu ý:</i> Thuật toán này có độ phức tạp thời gian rất lớn $O(m^V)$, chỉ phù hợp với các đồ thị vừa và nhỏ.</p>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Phần 4: Ứng dụng thực tế -->
-        <section class="theory-part" style="margin-top: 50px; padding: 30px; background: linear-gradient(145deg, #ffffff, #f0f0f0); border-radius: 20px; box-shadow: inset 5px 5px 10px #e6e6e6, inset -5px -5px 10px #ffffff;">
-            <h2 style="text-align: center; color: var(--kma-red);"><i class="fas fa-lightbulb"></i> ỨNG DỤNG THỰC TIỄN</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
-                <div style="text-align: center; padding: 15px;">
-                    <i class="fas fa-calendar-alt" style="font-size: 2.5rem; color: var(--primary);"></i>
-                    <h4 style="margin: 10px 0;">Lập lịch thi</h4>
-                    <p style="font-size: 0.85rem;">Tránh trùng ca thi cho sinh viên có cùng môn học.</p>
-                </div>
-                <div style="text-align: center; padding: 15px;">
-                    <i class="fas fa-broadcast-tower" style="font-size: 2.5rem; color: var(--primary);"></i>
-                    <h4 style="margin: 10px 0;">Cấp tần số</h4>
-                    <p style="font-size: 0.85rem;">Tránh nhiễu sóng giữa các trạm thu phát gần nhau.</p>
-                </div>
-                <div style="text-align: center; padding: 15px;">
-                    <i class="fas fa-microchip" style="font-size: 2.5rem; color: var(--primary);"></i>
-                    <h4 style="margin: 10px 0;">Tối ưu CPU</h4>
-                    <p style="font-size: 0.85rem;">Phân bổ thanh ghi hiệu quả trong trình biên dịch.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer Lý thuyết -->
-        <footer style="margin-top: 40px; text-align: center; font-size: 0.9rem; color: #7f8c8d; border-top: 1px solid #ddd; padding-top: 20px;">
-            <p>© 2026 Học viện Kỹ thuật Mật mã - Giáo trình số hóa</p>
-        </footer>
     </div>
+
+    <!-- Section Dưới Cùng: Ứng dụng -->
+    <div class="theory-card" style="margin-top: 30px;">
+        <h2><i class="fas fa-lightbulb"></i> 5. Ứng dụng thực tiễn của Bài toán Tô màu</h2>
+        <p style="color: #475569;">Trong Khoa học máy tính và Viễn thông, bài toán tô màu đồ thị là nền tảng cho nhiều hệ thống phân bổ tài nguyên tối ưu:</p>
+        
+        <div class="app-grid">
+            <div class="app-item">
+                <i class="fas fa-calendar-alt"></i>
+                <h4>Lập lịch thi cử / Thời khóa biểu</h4>
+                <p>Các đỉnh là môn thi, cạnh nối 2 môn nếu có sinh viên thi chung. Các môn cùng "màu" sẽ được xếp cùng một ca thi để tránh trùng lặp.</p>
+            </div>
+            <div class="app-item">
+                <i class="fas fa-broadcast-tower"></i>
+                <h4>Cấp phát tần số vô tuyến</h4>
+                <p>Các trạm phát sóng gần nhau (cạnh) không được dùng chung một tần số (màu) để tránh hiện tượng nhiễu sóng giao thoa.</p>
+            </div>
+            <div class="app-item">
+                <i class="fas fa-microchip"></i>
+                <h4>Phân bổ thanh ghi CPU</h4>
+                <p>Trình biên dịch mã nguồn (Compiler) dùng đồ thị để tối ưu hóa việc sử dụng số lượng thanh ghi hạn hẹp trên bộ vi xử lý máy tính.</p>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+
+
+
 <div id="slide-tab" class="content-section panel full-width" style="background: #f4f7f9; padding: 30px; border-radius: 20px;">
     
     <!-- Header & Search -->
@@ -1946,39 +2495,11 @@ window.addEventListener('DOMContentLoaded', () => graphLab.init());
     <div class="video-grid" id="kma-playlist-grid"></div>
 </div>
 
-<div id="game-tab" class="content-section panel full-width">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>🎮 Giải trí</h2>
-        <button class="slide-btn" id="stop-game-btn" onclick="stopGame()" style="border-color: var(--kma-red); color: var(--kma-red); display: none;">Dừng chơi</button>
-    </div>
 
-    <div id="game-selection" class="exam-grid" style="margin-top: 20px;">
-    <!-- GAME 1 -->
-    <div class="exam-item" onclick="loadGame('static/docs/game.html')" style="cursor: pointer;">
-        <div class="exam-icon-box" style="display: flex; align-items: center; justify-content: center; overflow: hidden;">
-            <!-- Thay 'duong-dan-anh-phi-hanh-gia.png' bằng file của bạn -->
-            <img src="static/docs/icontenlua.jpg" alt="Astronaut" style="width: 100%; height: 100%; object-fit: contain;">
-        </div>
-        <div class="exam-info">Game 1: Phi hành gia KMA</div>
-    </div>
 
-    <!-- GAME 2 -->
-    <div class="exam-item" onclick="loadGame('static/docs/bird.html')" style="cursor: pointer;">
-        <div class="exam-icon-box" style="display: flex; align-items: center; justify-content: center; overflow: hidden;">
-            <!-- Thay 'duong-dan-anh-ga-con.png' bằng file của bạn -->
-            <img src="static/docs/iconga.jpg" alt="Bird" style="width: 100%; height: 100%; object-fit: contain;">
-        </div>
-        <div class="exam-info">Game 2: Gà con đi học</div>
-    </div>
-</div>
-
-    <div id="game-placeholder" class="placeholder" style="display:none">
-        <p style="font-size: 3rem;">🕹️</p>
-        <p>Vui lòng chọn một trò chơi bên trên</p>
-    </div>
     
-    <iframe id="game-frame" style="height: 600px; border: none; width: 100%; display: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></iframe>
-</div>
+
+    
 
 <script>
     const i18n = {
@@ -2126,23 +2647,30 @@ function loadYoutubeManual() {
 
     function stopYoutube() { document.getElementById('yt-frame').src = ""; }
 
-  function loadGame(path) { 
-    // Ẩn menu chọn và hiện frame game
+ function loadGame(path) { 
+    // Ẩn menu chọn và hiện nút thoát
     document.getElementById('game-selection').style.display = 'none'; 
-    document.getElementById('game-placeholder').style.display = 'none'; 
-    document.getElementById('stop-game-btn').style.display = 'block'; 
+    document.getElementById('stop-game-btn').style.display = 'flex'; 
     
-    const frame = document.getElementById('game-frame'); 
-    frame.style.display = 'block'; 
+    // Hiển thị khung bọc game và tải nội dung
+    const wrapper = document.getElementById('game-frame-wrapper'); 
+    const frame = document.getElementById('game-frame');
+    wrapper.style.display = 'block'; 
     frame.src = path; 
+    
+    // Tự động cuộn xuống khung game
+    wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function stopGame() { 
+    const wrapper = document.getElementById('game-frame-wrapper');
     const frame = document.getElementById('game-frame'); 
-    frame.src = "about:blank"; 
-    frame.style.display = 'none'; 
     
-    // Hiện lại menu chọn game
+    // Xóa nội dung game và ẩn khung
+    frame.src = "about:blank"; 
+    wrapper.style.display = 'none'; 
+    
+    // Hiện lại menu chọn game và ẩn nút thoát
     document.getElementById('game-selection').style.display = 'grid'; 
     document.getElementById('stop-game-btn').style.display = 'none'; 
 }
