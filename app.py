@@ -13,12 +13,14 @@ app.secret_key = os.environ.get('SECRET_KEY', 'kma_secret_key_sieu_bao_mat')
 # ---------------------------------------------------------------------------
 # CẤU HÌNH GEMINI AI
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# CẤU HÌNH GEMINI AI
+# ---------------------------------------------------------------------------
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 if GEMINI_KEY:
     genai.configure(api_key=GEMINI_KEY)
     # Cấu hình model (dùng bản 1.5-flash cho nhanh và miễn phí)
-   # Thêm prefix 'models/' vào trước tên model
-model = genai.GenerativeModel("models/gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-1.5-flash")
 else:
     print("CẢNH BÁO: Chưa cấu hình GEMINI_API_KEY trong biến môi trường!")
 
