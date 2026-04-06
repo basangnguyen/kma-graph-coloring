@@ -10,6 +10,6 @@ colorama==0.4.6
 numpy==2.4.4
 opencv-python-headless==4.10.0.84
 packaging==26.0
-psycopg2-binary==2.9.9
+psycopg2-binary
 python-dotenv==1.0.1
 google-generativeai
