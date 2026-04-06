@@ -2581,18 +2581,9 @@ window.addEventListener('DOMContentLoaded', () => graphLab.init());
 
 <!-- Cập nhật lại JS một chút để có hiệu ứng active -->
 <script>
-    function loadPdf(url, frameId, placeholderId) {
-        const frame = document.getElementById(frameId);
-        const placeholder = document.getElementById(placeholderId);
-        
-        // Hiện iframe, ẩn placeholder
-        frame.style.display = 'block';
-        placeholder.style.display = 'none';
-        frame.src = url;
 
-        // Cuộn xuống vùng xem tài liệu
-        document.getElementById('viewer-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+
+    
 
     function filterSlides() {
         let input = document.getElementById('slide-search').value.toLowerCase();
@@ -2724,16 +2715,25 @@ window.addEventListener('DOMContentLoaded', () => graphLab.init());
     }
 }
 
-    function loadPdf(path, frameId, placeholderId, isExam = false) { 
-        document.getElementById(placeholderId).style.display = 'none'; 
-        const f = document.getElementById(frameId); 
-        f.style.display = 'block'; f.src = path; 
-        if (isExam) {
-            document.getElementById('pdf-viewer-container').style.display = '';
-            document.getElementById('exam-grid-container').style.display = '';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+   function loadPdf(path, frameId, placeholderId, isExam = false) { 
+    // 1. Ẩn placeholder và hiện iframe
+    document.getElementById(placeholderId).style.display = 'none'; 
+    const f = document.getElementById(frameId); 
+    f.style.display = 'block'; 
+    f.src = path; 
+
+    // 2. Xử lý hiển thị tùy theo tab
+    if (isExam) {
+        // TAB ĐỀ THI: Hiện khung xem PDF (thay '' thành 'block') và ẩn danh sách đề (thay '' thành 'none')
+        document.getElementById('pdf-viewer-container').style.display = 'block';
+        document.getElementById('exam-grid-container').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        // TAB SLIDE: Cuộn màn hình xuống vùng xem tài liệu
+        const viewer = document.getElementById('viewer-container');
+        if (viewer) viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+}
 
     function closePdfViewer() {
         document.getElementById('pdf-viewer-container').style.display = 'none';
