@@ -34,7 +34,8 @@
     const COLOR_SKY = "#71C5CF";
     const COLOR_BIRD = "#FCD740";
     const COLOR_GROUND = "#C8BE8C";
-    const COLOR_GOOD_GOLD = "#DAA520";
+    const COLOR_RED = "red"; // Màu mới cho text
+    const COLOR_KMA_RED = "#FF3D3D"; // Đỏ KMA cho logo và text Game Over
 
     canvas.width = SCREEN_WIDTH;
     canvas.height = SCREEN_HEIGHT;
@@ -67,11 +68,14 @@
         };
     }
 
+    // --- VẼ CON CHIM VÀ MŨ (ĐÃ SỬA) ---
     function drawBird() {
         ctx.save();
         ctx.translate(150, birdY);
         birdTilt = birdVel < 0 ? 25 : Math.max(-70, birdTilt - 5);
         ctx.rotate(-birdTilt * Math.PI / 180);
+
+        // Vẽ cơ thể con chim
         let birdGrad = ctx.createRadialGradient(-5, -5, 2, 0, 0, 15);
         birdGrad.addColorStop(0, "#FFF7AD"); 
         birdGrad.addColorStop(1, COLOR_BIRD);
@@ -82,7 +86,44 @@
         ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(11, -4, 2, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#FF6400";
         ctx.beginPath(); ctx.moveTo(13, 2); ctx.lineTo(23, 4); ctx.lineTo(13, 8); ctx.fill();
-        ctx.restore();
+
+        // Vẽ Mũ Lưỡi Trai KMA (Thay thế nón tốt nghiệp)
+        ctx.save();
+        ctx.translate(0, -18); // Di chuyển mũ lên trên
+        ctx.rotate(0); // Không xoay mũ theo chim để logo KMA rõ ràng hơn
+
+        // Vẽ thân nón baseball (màu đỏ)
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.moveTo(-16, 0); // Phía sau nón
+        ctx.lineTo(0, 0);
+        ctx.bezierCurveTo(4, -12, 12, -12, 16, 0); // Chóp nón
+        ctx.lineTo(26, 0); // Vành nón
+        ctx.bezierCurveTo(24, 4, 18, 4, 16, 0); // Cuối vành
+        ctx.lineTo(-16, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Vẽ Logo KMA nhỏ (khiên)
+        ctx.fillStyle = "#800000"; // Đỏ đậm hơn cho logo nổi bật
+        ctx.beginPath();
+        ctx.moveTo(8, -10); // Vị trí logo
+        ctx.lineTo(14, -10);
+        ctx.lineTo(14, -4);
+        ctx.lineTo(11, -2);
+        ctx.lineTo(8, -4);
+        ctx.closePath();
+        ctx.fill();
+
+        // Vẽ chữ KMA nhỏ (màu trắng)
+        ctx.fillStyle = "white";
+        ctx.font = "bold 8px 'Segoe UI'";
+        ctx.textAlign = "center";
+        ctx.fillText("KMA", 11, -6); // Căn chỉnh chữ
+
+        ctx.restore(); // Kết thúc phần vẽ mũ
+
+        ctx.restore(); // Kết thúc phần vẽ chim
     }
 
     function drawPipes() {
@@ -118,9 +159,8 @@
         const posX = 80; 
         const posY = SCREEN_HEIGHT - 30;
 
-        ctx.fillStyle = "white";
-        ctx.shadowColor = "black";
-        ctx.shadowBlur = 4;
+        ctx.fillStyle = "red"; // Đổi màu thành đỏ và nhỏ hơn
+        ctx.shadowBlur = 0; // Bỏ bóng cũ
         ctx.fillText(title, posX, posY);
         ctx.restore();
     }
@@ -146,7 +186,7 @@
                     currentPipeSpeed += 0.15;
                 }
 
-                // --- XỬ LÝ HIỆU ỨNG TEXT ĐIỂM SỐ ---
+                // --- XỬ LÝ HIỆU ỨNG TEXT ĐIỂM SỐ (HELLO/GRADE) ---
                 textTimer = 100;
                 if (score === 1) {
                     currentText = "Hello tân KMAer";
@@ -181,36 +221,29 @@
         
         drawGameTitle();
 
-        // --- SCORE ---
+        // --- SCORE (ĐÃ SỬA THÀNH ĐỎ VÀ NHỎ HƠN) ---
         ctx.save();
         let scoreX = 75; 
         let scoreY = 55; 
-        let goldGrad = ctx.createLinearGradient(scoreX, scoreY - 20, scoreX, scoreY + 5);
-        goldGrad.addColorStop(0, "#FFD700");
-        goldGrad.addColorStop(0.5, "#FFF");
-        goldGrad.addColorStop(1, "#DAA520");
-
-        ctx.font = "bold 28px 'Arial Black', sans-serif";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
-        ctx.shadowBlur = 8;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.fillStyle = goldGrad;
+        
+        ctx.font = "bold 28px 'Segoe UI', sans-serif"; // Đổi sang Segoe UI, nhỏ hơn
+        ctx.shadowBlur = 0; // Bỏ bóng cũ
+        ctx.fillStyle = COLOR_RED; // Màu đỏ mới
         ctx.fillText(`SCORE: ${score}`, scoreX, scoreY);
         ctx.restore();
 
-        // --- HIỆN THỊ TEXT HIỆU ỨNG TÙY CHỈNH ---
+        // --- HIỆN THỊ TEXT HIỆU ỨNG TÙY CHỈNH (HELLO/GRADE) (ĐÃ SỬA THÀNH ĐỎ VÀ NHỎ HƠN) ---
         if (textTimer > 0) {
             ctx.save();
             ctx.textAlign = "center";
-            ctx.font = "900 48px 'Arial Black', sans-serif";
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = "#FFD700";
+            ctx.font = "bold 28px 'Segoe UI', sans-serif"; // Giảm kích thước, font đậm
+            // ctx.shadowBlur = 20; // Bỏ bóng cũ
+            // ctx.shadowColor = "#FFD700"; // Bỏ màu bóng cũ
             ctx.globalAlpha = textTimer / 100;
-            ctx.strokeStyle = "#B8860B";
-            ctx.lineWidth = 6;
-            ctx.strokeText(currentText, SCREEN_WIDTH / 2, 110);
-            ctx.fillStyle = "#FFFFFF";
+            // ctx.strokeStyle = "#B8860B"; // Bỏ viền cũ
+            // ctx.lineWidth = 6; // Bỏ độ dày viền cũ
+            // ctx.strokeText(currentText, SCREEN_WIDTH / 2, 110); // Bỏ vẽ viền
+            ctx.fillStyle = "red"; // Đổi màu fill thành đỏ
             ctx.fillText(currentText, SCREEN_WIDTH / 2, 110);
             ctx.restore();
         }
@@ -226,35 +259,34 @@
                 ctx.font = "bold 40px 'Segoe UI'";
                 ctx.fillText("NHẤN SPACE ĐỂ BẮT ĐẦU", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
             } else {
-                ctx.fillStyle = "#FF3D3D";
+                ctx.fillStyle = COLOR_KMA_RED; // Đỏ KMA
                 ctx.font = "bold 60px 'Arial Black'";
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 0; // Bỏ bóng cũ
                 ctx.shadowColor = "red";
                 ctx.fillText("GAME OVER", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 60);
                 
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = "#FFF";
-                ctx.font = "30px 'Segoe UI'";
+                ctx.fillStyle = COLOR_RED; // Đỏ và nhỏ hơn
+                ctx.font = "bold 28px 'Segoe UI'";
                 ctx.fillText(`Score: ${score}`, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 10);
 
-                // --- CẬP NHẬT DÒNG GAME OVER DÀNH CHO KMAer ---
+                // --- CẬP NHẬT DÒNG GAME OVER DÀNH CHO KMAer (MÀU ĐỎ VÀ NHỎ HƠN) ---
                 const msg = "Đúng là con gà KMA! Học lại em nhé";
-                ctx.font = "italic bold 32px 'Segoe UI'";
+                ctx.font = "italic bold 28px 'Segoe UI'";
                 let msgWidth = ctx.measureText(msg).width;
                 
-                ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+                ctx.fillStyle = "rgba(255, 0, 0, 0.1)"; // Nền đỏ mờ hơn
                 ctx.beginPath();
                 ctx.roundRect(SCREEN_WIDTH/2 - msgWidth/2 - 20, SCREEN_HEIGHT/2 + 25, msgWidth + 40, 50, 10);
                 ctx.fill();
-                ctx.strokeStyle = "#FF0000";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = "red"; // Viền đỏ nhỏ hơn
+                ctx.lineWidth = 1;
                 ctx.stroke();
 
-                ctx.fillStyle = "#FF5555";
+                ctx.fillStyle = "#FF5555"; // Đỏ hồng
                 ctx.fillText(msg, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 60);
                 
-                ctx.font = "18px 'Segoe UI'";
-                ctx.fillStyle = "#AAA";
+                ctx.font = "bold 18px 'Segoe UI'"; // Đỏ và nhỏ hơn
+                ctx.fillStyle = COLOR_RED;
                 ctx.fillText("Nhấn Space để thử lại", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 110);
             }
         }
