@@ -221,15 +221,16 @@
         
         drawGameTitle();
 
-        // --- SCORE (ĐÃ SỬA THÀNH ĐỎ VÀ NHỎ HƠN) ---
+        // --- SCORE (ĐÃ SỬA THÀNH SỐ TÍN TÍCH LŨY) ---
         ctx.save();
-        let scoreX = 75; 
+        let scoreX = 145; 
         let scoreY = 55; 
         
         ctx.font = "bold 28px 'Segoe UI', sans-serif"; // Đổi sang Segoe UI, nhỏ hơn
         ctx.shadowBlur = 0; // Bỏ bóng cũ
         ctx.fillStyle = COLOR_RED; // Màu đỏ mới
-        ctx.fillText(`SCORE: ${score}`, scoreX, scoreY);
+        ctx.textAlign = "center";
+        ctx.fillText(`Số tín tích lũy: ${score}`, scoreX, scoreY);
         ctx.restore();
 
         // --- HIỆN THỊ TEXT HIỆU ỨNG TÙY CHỈNH (HELLO/GRADE) (ĐÃ SỬA THÀNH ĐỎ VÀ NHỎ HƠN) ---
@@ -267,7 +268,7 @@
                 
                 ctx.fillStyle = COLOR_RED; // Đỏ và nhỏ hơn
                 ctx.font = "bold 28px 'Segoe UI'";
-                ctx.fillText(`Score: ${score}`, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 10);
+                ctx.fillText(`Số tín tích lũy: ${score}`, SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 10);
 
                 // --- CẬP NHẬT DÒNG GAME OVER DÀNH CHO KMAer (MÀU ĐỎ VÀ NHỎ HƠN) ---
                 const msg = "Đúng là con gà KMA! Học lại em nhé";
