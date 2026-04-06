@@ -269,7 +269,7 @@ Quy tắc:
         # TÍNH NĂNG 2: MODEL XỊN HƠN (Llama 3.1 70B)
         chat_completion = client.chat.completions.create(
             messages=messages,
-            model="llama-3.1-70b-versatile",
+            model="llama-3.1-8b-instant",
             temperature=0.7, # Độ sáng tạo vừa phải
         )
         return jsonify({"answer": chat_completion.choices[0].message.content})
