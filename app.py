@@ -130,7 +130,7 @@ def chat():
                     "content": user_message
                 }
             ],
-            model="llama3-8b-8192", # Model nhẹ, siêu tốc độ
+            model="llama-3.1-8b-instant", # Model nhẹ, siêu tốc độ
         )
         return jsonify({"answer": chat_completion.choices[0].message.content})
         
