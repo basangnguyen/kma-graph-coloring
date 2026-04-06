@@ -2208,13 +2208,9 @@ input#vertices {
 <div id="calc-tab" class="content-section" style="grid-template-columns: 380px 1fr; gap: 20px; padding: 25px; min-height: 800px;">
     
     <!-- CỘT TRÁI: ĐIỀU KHIỂN & CẤU HÌNH -->
-    <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
-        <!-- PANEL CẤU HÌNH -->
-       <!-- Dùng viền tĩnh cho khung Cấu hình -->
-    <div class="panel shadow gradient-border" style="...">
-
-<!-- Dùng viền động cho khung Phân tích đồ thị -->
-    <div class="panel shadow gradient-border-animated" style="...">
+   <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <div class="panel shadow gradient-border" style="background: white; border-radius: 16px; padding: 24px; box-shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.05);">
             <h2 style="font-size: 1rem; color: #881337; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; margin-top:0; font-weight: 800; letter-spacing: -0.02em;">
                 <span style="background: #ffe4e6; padding: 6px; border-radius: 8px; border: 1px solid #fecdd3;">⚙️</span> Cấu hình Đồ thị
             </h2>
@@ -2244,18 +2240,22 @@ input#vertices {
                 </div>
                 <div>
                     <label style="font-size: 0.7rem; font-weight: 800; color: #be123c;">Cạnh (u-v)</label>
-                    <textarea id="edges" rows="4" style="width: 100%; padding: 10px; border: 1px solid #fecdd3; border-radius: 8px; background: #fffafb; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; resize: none; color: #881337; line-height: 1.4;">0-1&#10;1-2&#10;2-3&#10;3-0&#10;0-2</textarea>
+                    <textarea id="edges" rows="4" style="width: 100%; padding: 10px; border: 1px solid #fecdd3; border-radius: 8px; background: #fffafb; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; resize: none; color: #881337; line-height: 1.4;">0-1
+1-2
+2-3
+3-0
+0-2</textarea>
                 </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <button onclick="graphLab.startStepByStep()" class="action-btn" style="background: #fff; border: 1.5px solid #fb7185; color: #e11d48; font-weight: 700;">⏩ Từng bước</button>
-               <button onclick="graphLab.runMain()" class="action-btn gradient-border-animated" style="position: relative; background: #9f1239; color: white; ...">🚀 Chạy ngay</button>
+                
+                <button onclick="graphLab.runMain()" class="action-btn gradient-border-animated" style="position: relative; background: #9f1239; color: white; font-weight: 700; border: none; box-shadow: 0 4px 12px rgba(159, 18, 57, 0.25);">🚀 Chạy ngay</button>
             </div>
         </div>
 
-        <!-- PANEL PHÂN TÍCH -->
-        <div class="panel shadow" style="background: #fff1f2; border-radius: 16px; padding: 24px; border: 1px solid #fecdd3; color: #881337; box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.05);">
+        <div class="panel shadow gradient-border-animated" style="background: #fff1f2; border-radius: 16px; padding: 24px; color: #881337; box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.05);">
             <h2 style="font-size: 1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; margin-top:0; font-weight: 800;">
                 <span style="background: white; padding: 5px; border-radius: 8px; border: 1px solid #fecdd3;">🔍</span> Phân tích đồ thị
             </h2>
