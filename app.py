@@ -1,36 +1,28 @@
 import os
 import psycopg2
-from google import genai  # <-- THƯ VIỆN MỚI NHẤT CỦA GOOGLE
+from groq import Groq
 from psycopg2 import IntegrityError
 from psycopg2.extras import RealDictCursor
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-# Lấy SECRET_KEY từ Render
 app.secret_key = os.environ.get('SECRET_KEY', 'kma_secret_key_sieu_bao_mat')
 
 # ---------------------------------------------------------------------------
-# CẤU HÌNH GEMINI AI (CHUẨN MỚI NHẤT)
+# CẤU HÌNH AI (GROQ - LLAMA 3)
 # ---------------------------------------------------------------------------
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
-if GEMINI_KEY:
-    # Khởi tạo Client theo chuẩn mới của thư viện google-genai
-    gemini_client = genai.Client(api_key=GEMINI_KEY)
-else:
-    gemini_client = None
-    print("CẢNH BÁO: Chưa cấu hình GEMINI_API_KEY trong biến môi trường!")
+GROQ_KEY = os.environ.get("GROQ_API_KEY")
+client = Groq(api_key=GROQ_KEY) if GROQ_KEY else None
 
 # ---------------------------------------------------------------------------
-# HÀM KẾT NỐI DATABASE (POSTGRESQL)
+# HÀM KẾT NỐI DATABASE
 # ---------------------------------------------------------------------------
 def get_db_connection():
     db_url = os.environ.get('DATABASE_URL')
     if not db_url:
-        raise ValueError("Chưa tìm thấy DATABASE_URL trong biến môi trường!")
-    
-    conn = psycopg2.connect(db_url)
-    return conn
+        raise ValueError("Chưa tìm thấy DATABASE_URL!")
+    return psycopg2.connect(db_url)
 
 def init_db():
     try:
@@ -46,14 +38,14 @@ def init_db():
         conn.commit()
         cur.close()
         conn.close()
-        print("Đã kiểm tra/khởi tạo Database thành công!")
+        print("Khởi tạo Database thành công!")
     except Exception as e:
-        print(f"Lỗi khởi tạo DB: {e}")
+        print(f"Lỗi DB: {e}")
 
 init_db()
 
 # ---------------------------------------------------------------------------
-# CÁC ROUTE XỬ LÝ GIAO DIỆN
+# ROUTE GIAO DIỆN
 # ---------------------------------------------------------------------------
 @app.route('/')
 def home():
@@ -95,8 +87,7 @@ def register():
         conn = get_db_connection()
         cur = conn.cursor()
         try:
-            cur.execute('INSERT INTO Users (username, password) VALUES (%s, %s)', 
-                         (username, hashed_pw))
+            cur.execute('INSERT INTO Users (username, password) VALUES (%s, %s)', (username, hashed_pw))
             conn.commit()
             flash("Đăng ký thành công! Mời bạn đăng nhập.", "success")
             return redirect(url_for('login'))
@@ -113,32 +104,39 @@ def register():
     return render_template('register.html')
 
 # ---------------------------------------------------------------------------
-# ROUTE XỬ LÝ CHATBOT (GEMINI AI)
+# ROUTE CHATBOT AI (GROQ)
 # ---------------------------------------------------------------------------
 @app.route('/chat', methods=['POST'])
 def chat():
     if 'user' not in session:
         return jsonify({"answer": "Vui lòng đăng nhập!"}), 401
 
-    if not gemini_client:
-        return jsonify({"answer": "Lỗi: Hệ thống chưa được cấp API Key!"}), 500
+    if not client:
+        return jsonify({"answer": "Lỗi: Chưa cấu hình GROQ_API_KEY trên Render!"}), 500
 
     data = request.json
     user_message = data.get('message', '')
 
     try:
-        full_prompt = f"Bạn là trợ lý ảo thân thiện của trường KMA. Trả lời: {user_message}"
-        
-        # Cú pháp gọi AI hoàn toàn mới
-        response = gemini_client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=full_prompt
+        # Gọi API của Groq (dùng model Llama 3 cực xịn của Meta)
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Bạn là trợ lý ảo thân thiện của trường Học viện Kỹ thuật Mật mã (KMA). Hãy trả lời ngắn gọn, tự nhiên bằng tiếng Việt."
+                },
+                {
+                    "role": "user",
+                    "content": user_message
+                }
+            ],
+            model="llama3-8b-8192", # Model nhẹ, siêu tốc độ
         )
-        return jsonify({"answer": response.text})
+        return jsonify({"answer": chat_completion.choices[0].message.content})
         
     except Exception as e:
-        print(f"Lỗi Gemini: {e}")
-        return jsonify({"answer": f"Lỗi hệ thống: {str(e)}"}), 500
+        print(f"Lỗi AI: {e}")
+        return jsonify({"answer": f"Lỗi: {str(e)}"}), 500
 
 @app.route('/logout')
 def logout():
