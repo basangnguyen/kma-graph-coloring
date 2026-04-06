@@ -12,4 +12,4 @@ opencv-python-headless==4.10.0.84
 packaging==26.0
 psycopg2-binary
 python-dotenv==1.0.1
-google-generativeai
+google-generativeai==0.8.3
