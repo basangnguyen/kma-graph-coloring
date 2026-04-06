@@ -1419,7 +1419,7 @@ input#vertices {
 </div>
 
 
-<div id="home-tab" class="content-section panel full-width" style="padding: 0 !important; border-top: none; border-radius: 0;">
+<div id="home-tab" class="content-section panel full-width active" style="display: block; padding: 0 !important; border-top: none; border-radius: 0;">
     <!-- SECTION 1: SLIDESHOW -->
     <div class="main-slider">
         <div class="slides-wrapper">
@@ -1965,7 +1965,7 @@ input#vertices {
      ======================================================= -->
 
 <!-- TAB TÍNH TOÁN - PHIÊN BẢN TỐI ƯU HÀI HÒA (ROSE & CRIMSON) -->
-<div id="calc-tab" class="content-section active" style="display: grid; grid-template-columns: 380px 1fr; gap: 20px; background: #fff1f2; padding: 25px; font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 800px;">
+<div id="calc-tab" class="content-section" style="grid-template-columns: 380px 1fr; gap: 20px; padding: 25px; min-height: 800px;">
     
     <!-- CỘT TRÁI: ĐIỀU KHIỂN & CẤU HÌNH -->
     <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
@@ -2776,7 +2776,6 @@ function jumpToSlide(n) {
 
 // Khởi tạo khi load trang
 window.addEventListener('load', function() {
-    document.getElementById('btn-home').click();
     // Kiểm tra nếu hàm renderVideoGrid có tồn tại thì mới chạy
     if (typeof renderVideoGrid === "function") {
         renderVideoGrid();
